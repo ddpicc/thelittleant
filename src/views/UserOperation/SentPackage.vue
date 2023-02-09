@@ -629,14 +629,14 @@
           str = str + '整个包裹: '
         }
         for(let fullSelectedPackage of this.passedInContent.selectedPackages){
-          str = str +  fullSelectedPackage.tracking ;
+          str = str +  '"' + fullSelectedPackage.tracking + '"';
         }
 
         if(this.passedInContent.partPackages.length > 0){
           str = str + '部分包裹: '
         }
         for(let partSelectedPackage of this.passedInContent.partPackages){
-          str = str +  partSelectedPackage.tracking ;
+          str = str +  '"' + partSelectedPackage.tracking + '"';
         }
         if(str != ''){
           str = '(' + str + ')';

@@ -70,6 +70,8 @@
 										:items-per-page="15"
 										:search="searchStr2"
 										:custom-filter="filterText"
+										:sort-by="['status']"
+										:sort-desc="[true]"
 									>
 										<template v-slot:top>
 											<v-text-field v-model="searchStr2" clearable label="搜索..." class="mx-4"></v-text-field>
@@ -805,7 +807,7 @@
 						itemId : item.id
 					}
 				}).then( (res) => {
-
+					this.getItemsInPackage(this.selectedPackage.id);
 				})
 			},
 

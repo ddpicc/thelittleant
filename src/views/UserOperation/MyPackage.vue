@@ -73,7 +73,7 @@
 
                           <v-data-table
                             dense
-                            v-model="selected"
+                            v-model="myPackage.selected"
                             :headers="itemHeaders"
                             :items="myPackage.items"
                             hide-default-footer
@@ -326,7 +326,6 @@
       expanded: [],
       ifPassDateLimit: false,
 
-      selected: [],
       itemHeaders: [
         {
           text: '名称',
@@ -427,7 +426,7 @@
       jumpToSendPackage: function(){
         let selectedContent = {};
         selectedContent.method = this.sendoutMethod;
-        selectedContent.items = this.selected;
+        selectedContent.items = [];
         selectedContent.selectedPackages = [];
         selectedContent.partPackages = [];
         let package_selected_no = 0;
@@ -435,25 +434,23 @@
         let packageSelected = false;
         let partPackageSelected = false;
         for(let myPackage of this.thirdPartyPackageList){
-          for(let item of myPackage.items){
-            if(this.selected.indexOf(item) != -1){
+          if(myPackage.selected){
+            selectedContent.items = selectedContent.items.concat(myPackage.selected)
+            if(myPackage.selected.length == myPackage.items.length){
               packageSelected = true;
-            }else if(this.selected.indexOf(item) == -1){
+              package_selected_no = package_selected_no + 1;
+              selectedContent.selectedPackages.push({
+                id: myPackage.id,
+                tracking: myPackage.tracking,
+              });
+            }else{
               partPackageSelected = true;
+              needSplit = 1;
+              selectedContent.partPackages.push({
+                id: myPackage.id,
+                tracking: myPackage.tracking,
+              });
             }
-          }
-          if(packageSelected && !partPackageSelected){
-            package_selected_no = package_selected_no + 1;
-            selectedContent.selectedPackages.push({
-              id: myPackage.id,
-              tracking: myPackage.tracking,
-            });
-          }else if(packageSelected && partPackageSelected){
-            needSplit = 1;
-            selectedContent.partPackages.push({
-              id: myPackage.id,
-              tracking: myPackage.tracking,
-            });
           }
           //合并多拆分的同一种物品
 
