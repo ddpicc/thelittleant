@@ -182,6 +182,7 @@
       },
 
       save: function(){
+        console.log('111')
         if(this.recipientId != undefined){
           this.$http.post('/api/updateRecipientbyId',{   
               recipientName : this.recipientName,
@@ -199,7 +200,7 @@
             this.snackbarColor = 'green';
           })
         }else{
-          this.$http.post('/api/insertRecipient',{
+          this.$http.post('/api/user/insertRecipient',{
               userId : this.$store.state.user.user_id,          
               recipientName : this.recipientName,
               countryCode : this.phoneCode,

@@ -1,6 +1,6 @@
 var sqlMap = {
 	//生成预报信息
-	createForcastInfo: 'INSERT INTO littleAnt_forcastList(forcast_tracking,comment,storage_number,service_type,arrive_at) VALUES(?,?,?,?,?)',
+	createForcastInfo: 'INSERT INTO littleAnt_forcastList(forcast_tracking,carrier,target_warehouse,storage_number,forcast_weight,arrive_at,need_photo,need_firm,need_split,comment) VALUES(?,?,?,?,?,?,?,?,?,?)',
 	//更新预报信息
 	updateForcastInfo: 'UPDATE littleAnt_forcastList SET display = ? WHERE id = ?',
 	//获取所有包裹预报信息
@@ -13,7 +13,7 @@ var sqlMap = {
 	deleteForcastInfo: 'DELETE FROM littleAnt_forcastList where id = ?',
 
 
-	insertThirdPartyPackage: 'INSERT INTO littleAnt_third_party_package(storage_number,tracking,comment,in_store_date,status,service_type) VALUES(?,?,?,?,?,?)',
+	insertThirdPartyPackage: 'INSERT INTO littleAnt_third_party_package(storage_number,tracking,comment,in_store_date,inner_count,storage_area,status) VALUES(?,?,?,?,?,?,?)',
 	//更新第三方包裹状态，在内件清点完后更新状态未已清点
 	updateThirdPartyPackage: "UPDATE littleAnt_third_party_package SET status = ? WHERE id = ?",
   //获取当天的第三方包裹和系统内未清点内件的第三方包裹

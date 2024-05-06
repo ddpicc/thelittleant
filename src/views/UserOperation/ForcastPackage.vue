@@ -4,128 +4,168 @@
     fluid
     grid-list-xl
   >
-    <v-row justify="center">
+    <v-row>
+      <v-col cols="12">
+        <v-item-group mandatory active-class="primary" v-model="targetWarehouse">
+          <v-row>
+            <v-col
+              cols="12"
+              md="4"
+            >
+              <v-item v-slot="{ active, toggle }">
+                <v-card
+                  class="pa-3"
+                  height="180"
+                  @click="toggle"
+                >
+                    <div class="title">费城1001</div>
+                    <div>First Name：识别码 Last Name：XU</div>
+                    <div>城市：philadelphia 州/省：Pennsylvania</div>
+                    <div>县/郡：PA 门牌号：1202 (必填）</div>
+                    <div>地址：1001 vine st</div>
+                    <div>邮编：19107 电话：2672650980</div>
+                </v-card>
+              </v-item>
+            </v-col>
+            <v-col
+              cols="12"
+              md="4"
+            >
+              <v-item v-slot="{ active, toggle }">
+                <v-card
+                  class="pa-3"
+                  height="180"
+                  @click="toggle"
+                >
+                    <div class="title">费城2501</div>
+                    <div>First Name：XUEXIN+识别码 Last Name：XU</div>
+                    <div>城市：philadelphia 州/省：Pennsylvania</div>
+                    <div>县/郡：PA 门牌号：CHT2806-1</div>
+                    <div>地址：2501 wharton st unit S</div>
+                    <div>邮编：19146 电话：2672650980</div>
+                </v-card>
+              </v-item>
+            </v-col>
+            <v-col
+              cols="12"
+              md="4"
+            >
+              <v-item v-slot="{ active, toggle }">
+                <v-card
+                  class="pa-3"
+                  height="180"
+                  @click="toggle"
+                >
+                    <div class="title">费城3720</div>
+                    <div>First Name：识别码 Last Name：XU</div>
+                    <div>城市：philadelphia 州/省：Pennsylvania</div>
+                    <div>县/郡：PA 门牌号：2806</div>
+                    <div>地址：3720 Chestnut Street</div>
+                    <div>邮编：19104 电话：2672650980</div>
+                </v-card>
+              </v-item>
+            </v-col>
+            <v-col
+              cols="12"
+              md="4"
+            >
+              <v-item v-slot="{ active, toggle }">
+                <v-card
+                  class="pa-3"
+                  height="180"
+                  @click="toggle"
+                >
+                    <div class="title">费城3720</div>
+                    <div>First Name：识别码 Last Name：XU</div>
+                    <div>城市：philadelphia 州/省：Pennsylvania</div>
+                    <div>县/郡：PA 门牌号：2806</div>
+                    <div>地址：3720 Chestnut Street</div>
+                    <div>邮编：19104 电话：2672650980</div>
+                </v-card>
+              </v-item>
+            </v-col>
+            <v-col
+              cols="12"
+              md="4"
+            >
+              <v-item v-slot="{ active, toggle }">
+                <v-card
+                  class="pa-3"
+                  height="180"
+                  @click="toggle"
+                >
+                    <div class="title">费城3720</div>
+                    <div>First Name：识别码 Last Name：XU</div>
+                    <div>城市：philadelphia 州/省：Pennsylvania</div>
+                    <div>县/郡：PA 门牌号：2806</div>
+                    <div>地址：3720 Chestnut Street</div>
+                    <div>邮编：19104 电话：2672650980</div>
+                </v-card>
+              </v-item>
+            </v-col>
+          </v-row>
+        </v-item-group>
+      </v-col>
       <v-col cols="12">
         <material-card>
-          <v-tabs
-            background-color="transparent"
-              color="basil"
-              grow
+          <v-form
+            ref="form"
+            v-model="valid"
+            lazy-validation
           >
-            <v-tab>
-              预报包裹
-            </v-tab>
-            <v-tab>
-              已预报但还未入库的包裹
-            </v-tab>
-            <v-tab-item>
-              <v-divider
-                class="mt-6 mb-6"
-              ></v-divider>
-              <v-form
-                ref="forcastInfoForm"
-                v-model="valid"
-                lazy-validation
-              >
-                <v-row>
-                  <v-col
-                    cols="12"
-                    md="6"
-                  >
-                    <v-text-field
-                      v-model="package_tracking"
-                      label="Tracking # (请尽量输入完整的购物网站追踪单号)"
-                      :rules="requiredRule"
-                      @focus="focus($event)"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    md="6"
-                  >
-                    <v-text-field
-                      v-model="package_comment"
-                      label="包裹备注"
-                      @focus="focus($event)"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    md="6"
-                  >
-                    <v-select
-                      v-model="serviceType"
-                      :items="serviceTypeList"
-                      label="服务类型"
-                      :rules="requiredRule"
-                    ></v-select>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    md="6"
-                  >
-                    <v-menu
-                      v-model="menu2"
-                      :close-on-content-click="false"
-                      :nudge-right="40"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="auto"
-                    >
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-text-field
-                          v-model="arriveDate"
-                          label="预计包裹抵达仓库日期"
-                          prepend-icon="mdi-calendar"
-                          readonly
-                          v-bind="attrs"
-                          v-on="on"
-                        ></v-text-field>
-                      </template>
-                      <v-date-picker
-                        v-model="arriveDate"
-                        :allowed-dates="allowedDates"
-                        @input="menu2 = false"
-                      ></v-date-picker>
-                    </v-menu>
-                  </v-col>
-                </v-row>
-              </v-form>
-              <v-col class="d-inline-flex justify-end">
-                <v-btn color="blue" dark class="mr-2" @click="forcastCreate">确认</v-btn>
-              </v-col>
-            </v-tab-item>
-            <v-tab-item>
-              <v-divider
-                class="mt-6 mb-6"
-              ></v-divider>
-              <v-list-item
-                v-for="forcastInfo in forcastInfoList"
-                :key="forcastInfo.id"
-              >
-                <v-list-item-avatar>
-                  <v-icon
-                    class="blue lighten-3"
-                    dark
-                    small
-                    @click="deleteForcastInfo(forcastInfo.id)"
-                  >
-                    mdi-delete
-                  </v-icon>
-                </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item-title v-text="forcastInfo.forcast_tracking"></v-list-item-title>
-                  <v-list-item-subtitle v-text="forcastInfo.arrive_at"></v-list-item-subtitle>              
-                </v-list-item-content>
+            <v-text-field
+              v-model="trackingNo"
+              :rules="requiredRules"
+              label="美国境内运单号"
+              required
+            ></v-text-field>
 
-                <v-list-item-action>
-                  <div>
-                    {{forcastInfo.comment}}
-                  </div>
-                </v-list-item-action>
-              </v-list-item>
-            </v-tab-item>
-          </v-tabs>
+            <v-text-field
+              v-model="carrier"
+              :rules="requiredRules"
+              label="快递配送服务"
+              required
+            ></v-text-field>
+
+            <v-text-field
+              v-model="forcastWeight"
+              label="物品预估重量（磅LB）"
+            ></v-text-field>
+            
+            <v-text-field
+              v-model="forcastArriveTime"
+              label="预计到达时间"
+            ></v-text-field>
+            
+            <v-checkbox
+              v-model="needPhoto"
+              label="是否需要拍照(需要拍照请点击勾选方框)"
+            ></v-checkbox>
+
+            <v-checkbox
+              v-model="needFirm"
+              label="是否需要加固(额外收费，需要加固请点击勾选方框)"
+            ></v-checkbox>
+
+            <v-checkbox
+              v-model="needSplit"
+              label="是否需要分箱合箱操作"
+            ></v-checkbox>
+
+            <v-textarea
+              v-model="comment"
+              label="留言"
+            ></v-textarea>
+
+            <v-btn
+              color="success"
+              class="mr-4"
+              @click="validate"
+            >
+              提交包裹
+            </v-btn>
+
+          </v-form>
           
 				</material-card>
 			</v-col>
@@ -159,90 +199,54 @@
 
 <script>
 	export default {
-    data() {
-      return {
-        package_tracking: '',
-        package_comment: '',
-        serviceType: '寄往国内',
-        serviceTypeList: ['寄往国内','境内转运','包裹自提'],
-        arriveDate: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
-        menu2: false,
-        valid: false,
-        forcastInfoList: [],
+    data: () => ({
+      valid: true,
+      targetWarehouse: '',
+      trackingNo: '',
+      carrier: '',
+      requiredRules: [
+        v => !!v || '必填',
+      ],
+      forcastWeight: '',
+      forcastArriveTime: '',
+      needPhoto: false,
+      needFirm: false,
+      needSplit: false,
+      comment: '',
 
-        storeNm: this.$store.state.user.storage_number,
+      snackbar: false,
+      snackbarColor: '',
+      notification: '',
+    }),
 
-        snackbar: false,
-        snackbarColor: '',
-        notification: '',
-        requiredRule: [
-            v => !!v || 'Item is required',
-        ]
-      }
-    },
-
-		methods: {
-      focus(event) {
-        event.currentTarget.select();
-			},
-
-      allowedDates: val => Date.parse(val) > new Date()-7*24*60*60*1000 - 8.64e7,
-
-      forcastCreate: function(){
-        if(this.$refs.forcastInfoForm.validate()){        
-          this.$http.get('/api/package/existForcastPackage',{
-            params: {
-              forcast_tracking: this.package_tracking,
-            }
-          }).then( (res) => {
-            if(res.data.length === 0){
-              this.$http.post('/api/package/createForcastInfo',{
-                forcast_tracking: this.package_tracking,
-                comment: this.package_comment,
-                storage_number: this.storeNm,
-                service_type: this.serviceType,
-                arrive_at: this.arriveDate,
-              }).then( (res) => {
-                this.snackbar = true;
-                this.notification = '预报成功';
-                this.snackbarColor = 'green';
-                this.package_tracking = '';
-                this.package_comment = '';
-                this.getForcastInfo();
-              })
-            }else{
-              this.snackbar = true;
-              this.notification = '已经预报过该包裹';
-              this.snackbarColor = 'red';
-            }
-          })
-        }
-      },
-
-      deleteForcastInfo: function(id){
-        this.$http.delete('/api/package/deleteForcastInfo',{
-          params: {
-						id : id
-					}
+    methods: {
+      validate () {
+        this.$refs.form.validate()
+        this.$http.post('/api/package/createForcastInfo',{
+          forcast_tracking : this.trackingNo,
+          carrier : this.carrier,
+          target_warehouse: this.targetWarehouse,
+          forcast_weight : this.forcastWeight,
+          arrive_at : new Date().getTime(),
+          need_photo: this.needPhoto,
+          need_firm : this.needFirm,
+          needSplit: this.needSplit,
+          comment : this.comment,
+          storage_number: this.$store.state.user.storage_number,
+          service_type: '国际转运',
         }).then( (res) => {
-          this.getForcastInfo();
+          this.snackbar = true;
+					this.notification = '预报成功';
+					this.snackbarColor = 'green';
+          this.$refs.form.reset()
         })
       },
-
-      getForcastInfo: function(){
-        this.$http.get('/api/package/getForcastInfoByStorageNm',{
-          params: {
-            storage_number: this.storeNm,
-          }
-        }).then( (res) => {
-          this.forcastInfoList = res.data;
-        })
-      },      
+      reset () {
+        this.$refs.form.reset()
+      },
+      resetValidation () {
+        this.$refs.form.resetValidation()
+      },
     },
-
-    mounted: function() {
-      this.getForcastInfo();
-    },
-
-	}
+  }
 </script>

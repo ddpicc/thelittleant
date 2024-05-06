@@ -429,7 +429,7 @@
 					},
 					{
 						sortable: false,
-						text: '收件人',
+						text: '重量',
 						value: 'weight'
 					},
 				],
@@ -648,9 +648,9 @@
 				if(status == '处理中'){
 
 					this.$http.post('/api/updateMailBagStatus',{
-						status: '运往机场',
+						status: '交付完成',
             stautsCol : 'sendOut_at',
-            changeTime : getNowTimeFormatDate(),
+            changeTime : new Date().getTime(),
             mailBag_id : this.mailBag_id,           
           }).then( (res) => {
             this.snackbar = true;
@@ -658,7 +658,7 @@
             this.snackbarColor = 'green';
 						this.mailBag_status = '运往机场';
           })
-				}else if(status == '运往机场'){
+				}/* else if(status == '运往机场'){
 					
 					this.$http.post('/api/updateMailBagStatus',{
 						status: '发往中国',
@@ -696,7 +696,7 @@
             this.snackbarColor = 'green';
 						this.mailBag_status = '清关完成';
           })
-				}
+				} */
 			},
 
 			//excel操作

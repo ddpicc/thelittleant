@@ -462,13 +462,10 @@ import { getNowTimeFormatDate } from '../../utils/helpFunction';
         this.$http.get('/api/package/getAllThirdPartyPackage').then( (res) => {
           this.packages = res.data;
           for(let item of this.packages){
-            let today = getNowTimeFormatDate();
-            let instoredate = item.in_store_date;
-            today = Date.parse(today);
-            instoredate = Date.parse(instoredate);
-            let dateSpan = instoredate - today;
-            dateSpan = Math.abs(dateSpan);
-            let iDays = Math.floor(dateSpan / (24 * 3600 * 1000)) + 1;
+            let today = new Date().getTime()
+            let instoredate = item.in_store_date
+
+            let iDays = Math.floor((today - instoredate) / (24 * 3600 * 1000));
             this.$set(item,'instore_day',iDays);
           }
         })

@@ -24,9 +24,6 @@
 								<v-tab>
 									已预报但还未入库的包裹
 								</v-tab>
-								<v-tab>
-									内件清点
-								</v-tab>
 							</v-tabs>
 						</template>
 					</v-toolbar>
@@ -51,42 +48,6 @@
 											<v-icon
 												small
 												@click="deleteForcastInfo(item.id)"
-											>
-												mdi-close
-											</v-icon>
-										</template>
-          				</v-data-table>
-								</v-card-text>
-							</v-card>
-						</v-tab-item>
-						<v-tab-item>
-							<v-card flat>
-								<v-card-text>
-									<v-data-table
-										:headers="checkHeaders"
-										:items="uncheckedThirdpartyPackageList"
-										dense
-										item-key="id"
-										:items-per-page="15"
-										:search="searchStr2"
-										:custom-filter="filterText"
-										:sort-by="['status']"
-										:sort-desc="[true]"
-									>
-										<template v-slot:top>
-											<v-text-field v-model="searchStr2" clearable label="搜索..." class="mx-4"></v-text-field>
-										</template>
-										<template v-slot:item.action="{ item }">
-											<v-icon
-												small
-												@click="openCheckDialog(item)"
-											>
-												mdi-pencil
-											</v-icon>
-											<v-icon
-												class="ml-4"
-												small
-												@click="deleteThirdPartyPackage(item)"
 											>
 												mdi-close
 											</v-icon>
@@ -123,157 +84,175 @@
       </v-btn>
     </v-snackbar>
 		<v-dialog
-        max-width="800"
-				persistent
-				v-model="scanDialog"
-      >
-        <template v-slot:default="dialog">
-          <v-card>
-            <v-toolbar
-              color="blue"
-              dark
-            >扫描入库</v-toolbar>
-            <v-card-text>
-              <v-text-field
-								v-model="scaned_tracking"
-								label="Tracking# (扫描包裹Trackig)"
-								class='mt-4'
-								ref="mark2"
-								@keyup.enter.native="scanFinish"
-							></v-text-field>
-
-							<div v-if="!findPackage" class="text-center title text-uppercase mt-6 red">
-								没有匹配到预报信息
-							</div>
-							<div v-if="findPackage" class="text-center title text-uppercase mt-6 green">
-								匹配到预报信息
-							</div>
-							<v-list-item v-if="findPackage" three-line>
-								<v-list-item-content>
-									<v-list-item-title>仓位号： {{storage_number}}</v-list-item-title>
-									<v-list-item-subtitle>
-										备注： {{comment}}
-									</v-list-item-subtitle>
-									<v-list-item-subtitle>
-										{{service_type}}
-									</v-list-item-subtitle>
-								</v-list-item-content>
-							</v-list-item>
-            </v-card-text>
-            <v-card-actions class="justify-end">
-							<v-btn
-                text
-								id="checkBtn"
-                @click="createThirdpartyPackage"
-              >确认</v-btn>
-              <v-btn
-                text
-                @click="closeScanDialog"
-              >关闭</v-btn>
-            </v-card-actions>
-          </v-card>
-        </template>
-      </v-dialog>
-
-			<!--内件清点 对话框 -->
-			<v-dialog
-				v-model="checkDialog"
-				fullscreen
-				hide-overlay
-    	>
-      <v-card>
-        <v-toolbar
-          dark
-          color="blue"
-					dense
-        >
-          <v-btn
-            icon
-            dark
-            @click="cancelCheckItem()"
-          >
-            取消
-          </v-btn>
-					<v-toolbar-title>
-						内件清点
-					</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-toolbar-items>
-            <v-btn
-              dark
-              text
-              @click="finishCheckItem()"
-            >
-              保存
-            </v-btn>
-          </v-toolbar-items>
-        </v-toolbar>
-
-				<v-card-text>
-					<div class='title mt-6' align="center">
-						TRACKING: {{selectedPackage.tracking}}<br>
-						备注： {{selectedPackage.comment}}<br>
-						仓位号： {{selectedPackage.storage_number}} &nbsp;&nbsp;&nbsp;&nbsp; {{selectedPackage.service_type}}<br>
-					</div>
-					<v-divider
-						class="mt-6 mb-6"
-					></v-divider>
-					<div class="overline mb-4 d-inline-flex">
-						内件
-						<v-chip
-							class="ml-12"
-							@click="scanAddItemDialog = true"
-						>
-							<v-icon left>
-								mdi-image-filter-center-focus-strong
-							</v-icon>
-							扫描添加
-						</v-chip>
-					</div>
-					<v-divider
-						class="mt-6 mb-6"
-					></v-divider>
-					<v-data-table
-						:headers="userItemHeader"
-						:items="userItemList"
-						hide-default-footer
-						show-expand
-            single-expand
-            :expanded.sync="expanded"
+			max-width="800"
+			persistent
+			v-model="scanDialog"
+		>
+			<template v-slot:default="dialog">
+				<v-card>
+					<v-toolbar
+						dark
+						color="blue"
+						dense
 					>
-						<template v-slot:expanded-item="{ item }">
-							<td :colspan="8">
-								<v-simple-table>
-									<template v-slot:default>
-										<tbody>
-											<tr >
-												<td style="width:25%"><v-img :src='"https://image.endlessflora.com/" + item.pic1_url' dark max-width="70"></v-img></td>
-												<td style="width:25%"><v-img :src='"https://image.endlessflora.com/" + item.pic2_url' dark max-width="70"></v-img></td>
-												<td style="width:25%"><v-img :src='"https://image.endlessflora.com/" + item.pic3_url' dark max-width="70"></v-img></td>
-											</tr>
-										</tbody>
+						<v-toolbar-title>
+							扫描入库
+						</v-toolbar-title>
+
+					</v-toolbar>
+					<v-card-text>
+						<v-text-field
+							v-model="scaned_tracking"
+							label="Tracking# (扫描包裹Trackig)"
+							ref="mark2"
+							@keyup.enter.native="scanFinish"
+						></v-text-field>
+
+						<div v-if="!findPackage" class="text-center title text-uppercase mt-6 red">
+							没有匹配到预报信息
+						</div>
+						<div v-if="findPackage" class="text-center title text-uppercase mt-6 green">
+							匹配到预报信息
+						</div>
+
+						<v-card v-if="finishScan && findPackage">
+							<v-card-text>
+								<div>
+									TRACKING: {{scaned_tracking}}<br>
+									备注： {{comment}}<br>
+									仓位号： {{storage_number}} &nbsp;&nbsp;&nbsp;&nbsp; {{service_type}}<br>
+									是否拍照: {{ need_photo }}<br>
+									是否加固: {{ need_firm }}<br>
+									是否拆箱合箱: {{ need_split }}
+								</div>
+								<v-divider
+									class="mt-6 mb-6"
+								></v-divider>
+								<v-select
+									outlined
+									v-model="packageType"
+									:items="itemTypeList"
+									label="包裹类型"
+								></v-select>
+								<v-text-field
+									v-model="storage_area"
+									label="包裹放置区域"
+								></v-text-field>
+								<v-text-field
+									v-model="inner_count"
+									label="内件数量"
+								></v-text-field>
+							</v-card-text>
+						</v-card>
+						<v-card v-if="finishScan && !findPackage">
+							<v-card-text>
+								<div>
+									<div class="title">无主入库</div>
+									TRACKING: {{scaned_tracking}}<br>
+								</div>
+								<v-divider
+									class="mt-6 mb-6"
+								></v-divider>
+								<v-select
+									outlined
+									v-model="itemType"
+									:items="itemTypeList"
+									label="包裹类型"
+								></v-select>
+								<v-text-field
+									v-model="storage_area"
+									label="包裹放置区域"
+								></v-text-field>
+								<v-text-field
+									v-model="inner_count"
+									label="内件数量"
+								></v-text-field>
+								<v-textarea
+									v-model="comment"
+									label="留言"
+								></v-textarea>
+							</v-card-text>
+						</v-card>
+						<v-card v-if="checkItem">
+							<v-card-text>
+								<div class="overline mb-4 d-inline-flex">
+									内件
+									<v-chip
+										class="ml-12"
+										@click="addItemClick"
+									>
+										<v-icon left>
+											mdi-image-filter-center-focus-strong
+										</v-icon>
+										扫描添加
+									</v-chip>
+								</div>
+								<v-divider
+									class="mt-6 mb-6"
+								></v-divider>
+								<v-data-table
+									:headers="userItemHeader"
+									:items="userItemList"
+									hide-default-footer
+									show-expand
+									single-expand
+									:expanded.sync="expanded"
+								>
+									<template v-slot:expanded-item="{ item }">
+										<td :colspan="8">
+											<v-simple-table>
+												<template v-slot:default>
+													<tbody>
+														<tr >
+															<td style="width:25%"><v-img :src='"https://image.endlessflora.com/" + item.pic1_url' dark max-width="70"></v-img></td>
+															<td style="width:25%"><v-img :src='"https://image.endlessflora.com/" + item.pic2_url' dark max-width="70"></v-img></td>
+															<td style="width:25%"><v-img :src='"https://image.endlessflora.com/" + item.pic3_url' dark max-width="70"></v-img></td>
+														</tr>
+													</tbody>
+												</template>
+											</v-simple-table>
+										</td>
 									</template>
-								</v-simple-table>
-							</td>
-						</template>
-						<template v-slot:item.action="{ item }">
-							<v-btn
-								text
-								@click="openUploadDialog(item)"
-							>
-								上传照片
-							</v-btn>
-							<v-btn
-								class="ml-4"
-								text
-								@click="deleteItem(item)"
-							>
-								删除
-							</v-btn>
-						</template>
-					</v-data-table>
-				</v-card-text>
-			</v-card>
+									<template v-slot:item.action="{ item }">
+										<v-btn
+											text
+											@click="openUploadDialog(item)"
+										>
+											上传照片
+										</v-btn>
+										<v-btn
+											class="ml-4"
+											text
+											@click="deleteItem(item)"
+										>
+											删除
+										</v-btn>
+									</template>
+								</v-data-table>
+							</v-card-text>
+						</v-card>
+					</v-card-text>
+					<v-card-actions class="justify-end">
+						<v-btn
+						v-if="need_split == '否'"
+							text
+							id="checkBtn"
+							@click="createThirdpartyPackage()"
+						>确认</v-btn>
+						<v-btn
+							v-if="need_split == '是'"
+							text
+							id="checkBtn"
+							@click="createThirdpartyPackageAndItem()"
+						>确认</v-btn>
+						<v-btn
+							text
+							@click="closeScanDialog"
+						>关闭</v-btn>
+					</v-card-actions>
+				</v-card>
+
+			</template>
 		</v-dialog>
 
 		<!-- 扫描匹配内件信息 -->
@@ -439,7 +418,6 @@
 </template>
 
 <script>
-	import {dateToString,getNowTimeFormatDate} from '../../utils/helpFunction';
 	export default {
     data: () => ({
 			tab: null,
@@ -452,6 +430,11 @@
           text: '包裹tracking',
           value: 'forcast_tracking'
         },
+				{
+					sortable: false,
+          text: '预报地址',
+          value: 'target_warehouse'
+				},
         {
           sortable: false,
           text: '备注',
@@ -482,55 +465,22 @@
 			scanDialog: false,
 			scaned_tracking: '',
 			findPackage: false,
+			finishScan: false,
 			forcastInfoId: '',
 			storage_number: '',
 			comment: '',
 			service_type: '',
+			need_photo: '',
+			need_firm: '',
+			need_split: '',
 
 			snackbar: false,
       snackbarColor: '',
       notification: '',
 
-			//清点tab
-			checkHeaders: [
-        {
-          sortable: false,
-          text: '包裹tracking',
-          value: 'tracking'
-        },
-        {
-          sortable: false,
-          text: '备注',
-          value: 'comment'
-        },
-        {
-          sortable: false,
-          text: '仓位号',
-          value: 'storage_number'
-        },
-				{
-          sortable: true,
-          text: '类型',
-          value: 'service_type',
-        },
-        {
-          sortable: false,
-          text: '入库时间',
-          value: 'in_store_date'
-        },
-				{
-          sortable: true,
-          text: '状态',
-          value: 'status'
-        },        
-        {
-          sortable: false,
-          text: '操作',
-          value: 'action',
-        },
-      ],
+			
 			uncheckedThirdpartyPackageList: [],
-			selectedPackage: {},
+			newCreatedPackageId: '',
 
 			userItemHeader: [
 				{
@@ -572,6 +522,7 @@
       ],
 			expanded: [],
 			userItemList: [],
+			packageType: '',
 			itemType: '',
       itemTypeList: ['鞋类','奶粉','保健品','零食','日用品','衣服','玩具','化妆品','箱包','电子产品','手表'],
       itemName: '',
@@ -585,7 +536,7 @@
 			findItem: false,
 			findItemTemplateId: '',
 
-			checkDialog: false,
+			checkItem: false,
 
 			limit: 3,
       type: 0,
@@ -598,6 +549,11 @@
       progressMsg: '',
       processStatus: 0,
       overlay: false,
+
+			storage_area: '',
+			inner_count: '',
+			adminComment: '',
+
 		}),
 
 		methods: {
@@ -612,6 +568,12 @@
 			getForcastInfo: function(){
         this.$http.get('/api/package/getForcastInfo').then( (res) => {
           this.forcastInfoList = res.data;
+					for(let item of this.forcastInfoList){
+            item.arrive_at = new Date(item.arrive_at).toLocaleString()
+						if(item.target_warehouse == 0){
+							item.target_warehouse = '费城101'
+						}
+          }
         })
       },
 
@@ -625,7 +587,7 @@
         })
       },
 
-			getTodayandUncheckedThirdPartyPackage: function(){
+/* 			getTodayandUncheckedThirdPartyPackage: function(){
 				var today = dateToString(new Date());
         var tomorrow = dateToString(new Date(new Date().setDate(new Date().getDate()+1)));
         this.$http.get('/api/package/getTodayandUncheckedThirdPartyPackage', {
@@ -636,7 +598,7 @@
 				}).then( (res) => {
           this.uncheckedThirdpartyPackageList = res.data;
         })
-      },
+      }, */
 			
 			scanFinish: function(){
 				if(this.scaned_tracking == ''){
@@ -648,6 +610,7 @@
             forcast_tracking: this.scaned_tracking.trim(),
           }
         }).then( (res) => {
+					this.finishScan = true
           if(res.data.length === 0){
 						this.findPackage = false;
 					}else{
@@ -656,7 +619,10 @@
 						this.comment = res.data[0].comment;
 						this.service_type = res.data[0].service_type;
 						this.forcastInfoId = res.data[0].id;
-						document.querySelector('#checkBtn').focus();
+						this.need_photo = res.data[0].need_photo != 1? '否' : '是'
+						this.need_firm = res.data[0].need_firm != 1? '否' : '是'
+						this.need_split = res.data[0].need_split != 1? '是' : '否'
+						this.checkItem = res.data[0].need_split != 1? '是' : '否'
 					}
 				})
 			},
@@ -666,43 +632,72 @@
 					storage_number : this.storage_number,
 					tracking : this.scaned_tracking,          
 					comment : this.comment,
-					status : '未清点',
-					instore_date : getNowTimeFormatDate(),
-					service_type: this.service_type,
+					status : '已清点',
+					inner_count: this.inner_count,
+					storage_area: this.storage_area,
+					instore_date : new Date().getTime(),
 				}).then( (res) => {
 					this.deleteForcastInfo(this.forcastInfoId);
-					this.getTodayandUncheckedThirdPartyPackage();
+					this.$http.post('/api/item/insertPackageItem',{
+						packageId : res.data.insertId,
+						itemCount : 1,
+						itemTemplate_Id: 1,
+					})
 					this.snackbar = true;
           this.notification = '入库成功';
           this.snackbarColor = 'green';
 					this.scaned_tracking = '';
 					this.findPackage = false;
+					this.storage_area = ''
+					this.inner_count = ''
+					this.finishScan = false
 					this.$refs.mark2.$el.querySelector('input').focus();
 				})
 			},
 
-			deleteThirdPartyPackage: function(item){
-				this.$http.delete('/api/package/deleteThirdPartyPackagebyId',{
-          params: {
-						packageId : item.id
-					}
-        }).then( (res) => {
-          this.getTodayandUncheckedThirdPartyPackage();
-        })
+			addItemClick: function(){
+				this.$http.post('/api/package/insertThirdPartyPackage',{
+					storage_number : this.storage_number,
+					tracking : this.scaned_tracking,
+					comment : this.comment,
+					status : '已清点',
+					inner_count: this.inner_count,
+					storage_area: this.storage_area,
+					instore_date : new Date().getTime(),
+				}).then( (res) => {
+					this.deleteForcastInfo(this.forcastInfoId)
+					//设置包裹id
+					this.scanAddItemDialog = true
+					this.newCreatedPackageId = res.data.insertId
+				})
 			},
+
+			createThirdpartyPackageAndItem: function(){
+				if(this.userItemList == []){
+					alert('需要录入内件信息')
+					return
+				}
+				this.$http.post('/api/package/insertThirdPartyPackage',{
+					storage_number : this.storage_number,
+					tracking : this.scaned_tracking,
+					comment : this.comment,
+					status : '已清点',
+					inner_count: this.inner_count,
+					storage_area: this.storage_area,
+					instore_date : new Date().getTime(),
+				}).then( (res) => {
+					this.deleteForcastInfo(this.forcastInfoId)
+					this.checkItem = true
+				})
+				this.checkItem = true
+			},
+
 
 			closeScanDialog: function(){
 				this.scaned_tracking = '';
 				this.findPackage = false;
+				this.finishScan = false
 				this.scanDialog = false;
-			},
-
-			//内件清点
-			openCheckDialog: function(item){
-				this.checkDialog = true;
-				this.selectedPackage = item;
-				this.getItemsInPackage(this.selectedPackage.id);
-
 			},
 
 			closeScanAddItemDialog: function(){
@@ -762,18 +757,18 @@
 
 				if(this.findItemTemplateId){
 					this.$http.post('/api/item/insertPackageItem',{
-						packageId : this.selectedPackage.id,
+						packageId : this.newCreatedPackageId,
 						itemCount : this.itemCount,
 						itemTemplate_Id: this.findItemTemplateId,
 					}).then( (res) => {
-						this.getItemsInPackage(this.selectedPackage.id);
+						this.getItemsInPackage(this.newCreatedPackageId);
 						//clear 
 						this.itemType = '';
 						this.itemName = '';
 						this.itemPrice = '';
 						this.itemCount = '';
 						this.itemBrand = '';
-						this.scaned_itemUPC = '';						
+						this.scaned_itemUPC = '';
 					})
 				}else{
 					this.$http.post('/api/item/insertItemTemplate',{
@@ -784,11 +779,11 @@
 						itemBrand : this.itemBrand,
 					}).then( (res) => {
 						this.$http.post('/api/item/insertPackageItem',{
-							packageId : this.selectedPackage.id,
+							packageId : this.newCreatedPackageId,
 							itemCount : this.itemCount,
 							itemTemplate_Id: res.data.insertId,
 						}).then( (res) => {
-							this.getItemsInPackage(this.selectedPackage.id);
+							this.getItemsInPackage(this.newCreatedPackageId);
 							//clear 
 							this.itemType = '';
 							this.itemName = '';
@@ -807,7 +802,7 @@
 						itemId : item.id
 					}
 				}).then( (res) => {
-					this.getItemsInPackage(this.selectedPackage.id);
+					this.getItemsInPackage(this.newCreatedPackageId);
 				})
 			},
 
@@ -815,7 +810,7 @@
 				//更新保存照片信息
 				this.$http.post('/api/package/updateThirdPartyPackage',{
 					status: '已清点',
-					package_Id: this.selectedPackage.id,
+					package_Id: this.newCreatedPackageId,
 				}).then( (res) => {
 					this.checkDialog = false;
 					this.getTodayandUncheckedThirdPartyPackage();

@@ -25,9 +25,9 @@
 									处理中
 								</v-tab>
 								<v-tab>
-									运往机场
+									交付完成
 								</v-tab>
-                <v-tab>
+                <!-- <v-tab>
 									发往中国
 								</v-tab>
                 <v-tab>
@@ -35,7 +35,7 @@
 								</v-tab>
                 <v-tab>
 									清关完成
-								</v-tab>
+								</v-tab> -->
 							</v-tabs>
 						</template>
 					</v-toolbar>
@@ -81,13 +81,13 @@
 										</template>
 										<template v-slot:item.action="{ item }">
                       <v-btn @click="jumpToMailBagOperation(item.id, item.name, item.vendor, item.status)" text outlined>打开</v-btn>
-                      <v-btn @click="updateStatus(item)" text outlined class="ml-2">更新状态</v-btn>
+                      <!-- <v-btn @click="updateStatus(item)" text outlined class="ml-2">更新状态</v-btn> -->
 										</template>
           				</v-data-table>
 								</v-card-text>
 							</v-card>
 						</v-tab-item>
-            <v-tab-item>
+            <!-- <v-tab-item>
 							<v-card flat>
 								<v-card-text>
 									<v-data-table
@@ -154,7 +154,7 @@
           				</v-data-table>
 								</v-card-text>
 							</v-card>
-						</v-tab-item>
+						</v-tab-item> -->
 					</v-tabs-items>
 				</material-card>
 			</v-col>
@@ -303,7 +303,7 @@
           value: 'action',
         },
       ],
-        vendorList: ['新元快递','TST速运通','青岛中通','沈阳圆通'],
+        vendorList: ['QQ快递'],
         vendor: '',
         deleteComfirmDialog: false,
         needDeleteMailBagId: '',

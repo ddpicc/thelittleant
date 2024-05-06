@@ -41,7 +41,7 @@
               <div v-if="roles == 'premium'" class="mx-2">高级用户<v-chip dark class="ml-3" @click="jumpToAccountUpgrade">更改</v-chip></div>
               <div v-if="roles == 'admin'" class="mx-2">管理员</div>
               <br>
-              <div class="mx-2">仓位号： {{storeNm}}</div>
+              <div class="mx-2">用户识别码： {{storeNm}}</div>
               <div class="mx-2">手机号码：{{phoneNm}}</div>
               <div class="mx-2">账户余额： {{balance}} 美元 &nbsp;&nbsp; <span v-if="this.$store.state.user.balance < 3" style="color: red">余额不足，请尽快充值</span></div>
               <br>
@@ -64,23 +64,22 @@
           class="mx-auto"
           height="386px"
         >
-          <v-card-text class="text--primary">
-            <h3 style="color: red">美国仓库地址</h3>
-            <v-divider
-              class="mb-3"
-            ></v-divider>
-            <div>First Name: 自定义&nbsp;&nbsp;&nbsp;&nbsp;Last Name: {{storeNm}}</div>
-            <div>Address 1: 100 E Scotland Dr,&nbsp;&nbsp;Suite 105A</div>
-            <div>Address 2: {{storeNm}}</div>
-            <div>City: Bear&nbsp;&nbsp;&nbsp;&nbsp;State: DE&nbsp;&nbsp;&nbsp;&nbsp;Zip Code: 19701</div>
-            <v-divider
-              class="mb-3"
-            ></v-divider>
-            <div>如网上下单收件人必须与信用卡信息匹配 则</div>
-            <div>First Name: 自定义&nbsp;&nbsp;&nbsp;&nbsp;Last Name: 自定义</div>
-            <div>Address 1: 100 E Scotland Dr,&nbsp;&nbsp;Suite 105A &nbsp;{{storeNm}}</div>
-            <div>City: Bear&nbsp;&nbsp;&nbsp;&nbsp;State: DE&nbsp;&nbsp;&nbsp;&nbsp;Zip Code: 19701</div>
-          </v-card-text>
+          <v-list rounded>
+            <v-subheader>美国代收地址</v-subheader>
+            <v-list-item-group
+              v-model="selectedItem"
+              color="primary"
+            >
+              <v-list-item
+                v-for="(item, i) in warehouseList"
+                :key="i"
+              >
+                <v-list-item-content>
+                  <v-list-item-title v-text="item.text"></v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
         </v-card>
       </v-col>
       <v-col
@@ -185,6 +184,13 @@
         blogDialog: false,
         title: '',
         content: '',
+        warehouseList: [
+          { text: 'Real-Time' },
+          { text: 'Audience' },
+          { text: 'Conversions' },
+          { text: 'Audience' },
+          { text: 'Conversions' },
+        ],
       }
     },
 

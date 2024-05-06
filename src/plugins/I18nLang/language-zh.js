@@ -1,6 +1,6 @@
 export const lang = {
     login_menu: '登录',
-    home: '小蚂蚁转运',
+    home: '抱抱转运',
     login_title: '用户登录',
     login_email: '用户邮箱',
     login_password: '密码',

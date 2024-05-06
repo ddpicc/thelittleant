@@ -37,7 +37,9 @@
 								fixed-tabs
 							>
 								<v-tabs-slider color="black"></v-tabs-slider>
-
+                <v-tab>
+									已预报包裹
+								</v-tab>
 								<v-tab>
 									已入库包裹
 								</v-tab>
@@ -52,6 +54,29 @@
 					</v-toolbar>
 
 					<v-tabs-items v-model="tab">
+            <v-tab-item>
+              <v-data-table
+                :headers="forcastHeader"
+                :items="forcastPackageList"
+                dense
+                item-key="id"
+                :items-per-page="15"
+                :search="searchStr"
+                :custom-filter="filterText"
+              >
+                <template v-slot:top>
+                  <v-text-field v-model="searchStr" clearable label="搜索..." class="mx-4"></v-text-field>
+                </template>
+                <template v-slot:item.action="{ item }">
+                  <v-icon
+                    small
+                    @click="deleteForcastInfo(item.id)"
+                  >
+                    mdi-close
+                  </v-icon>
+                </template>
+              </v-data-table>
+            </v-tab-item>
 						<v-tab-item class='mt-6 mb-2'>
               <v-row>
                 <v-col 
@@ -283,7 +308,7 @@
   import {getNowTimeFormatDate} from '../../utils/helpFunction';
   export default {
     data: () => ({
-      tab: null,
+      tab: 1,
       backupWaitPackageList: [],
       backupPackedPackageList: [],
       backupThirdPartyList: [],
@@ -323,6 +348,34 @@
           value: 'action',
         },
       ],
+      forcastHeader: [
+      {
+          sortable: false,
+          text: '包裹tracking',
+          value: 'forcast_tracking'
+        },
+				{
+					sortable: false,
+          text: '预报地址',
+          value: 'target_warehouse'
+				},
+        {
+          sortable: false,
+          text: '备注',
+          value: 'comment'
+        },
+        {
+          sortable: false,
+          text: '预计到达时间',
+          value: 'arrive_at'
+        },        
+        {
+          sortable: false,
+          text: '操作',
+          value: 'action',
+        },
+      ],
+      forcastPackageList: [],
       expanded: [],
       ifPassDateLimit: false,
 
@@ -580,6 +633,19 @@
         })
         this.backupWaitPackageList = this.waitPackageList;
         this.backupPackedPackageList = this.packedPackageList;
+        this.$http.get('/api/package/getForcastInfoByStorageNm',{
+          params: {
+            storage_number : this.$store.state.user.storage_number,         
+					}
+        }).then( (res) => {
+          this.forcastPackageList = res.data;
+					for(let item of this.forcastPackageList){
+            item.arrive_at = new Date(item.arrive_at).toLocaleString()
+						if(item.target_warehouse == 0){
+							item.target_warehouse = '费城101'
+						}
+          }
+        })
       },
 
       previewImg: function(url){
