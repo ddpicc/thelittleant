@@ -54,6 +54,10 @@ router.delete('/deleteThirdPartyPackagebyId', (req, res, next) => {
   api.deleteThirdPartyPackagebyId(req, res, next);
 });
 
+router.post('/assignNewStorageNumber', (req, res, next) => {
+  api.assignNewStorageNumber(req, res, next);
+});
+
 router.get('/getUserPackageByUser', (req, res, next) => {
   api.getUserPackageByUser(req, res, next);
 });

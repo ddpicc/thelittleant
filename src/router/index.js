@@ -14,7 +14,6 @@ import Homepage from '../views/HomePage'
 import Login from '../views/LoginAndRegister/Login'
 import ForgetPass from '../views/LoginAndRegister/ForgetPass'
 import Register from '../views/LoginAndRegister/Register'
-import SelectPlan from '../views/LoginAndRegister/SelectPlan.vue'
 import BlogPage from '../views/BlogPage.vue'
 
 
@@ -32,7 +31,7 @@ export const constantRouterMap = [
   { path: '/login', component: Login, hidden: true },
   { path: '/forgetPass', component: ForgetPass, hidden: true },
   { path: '/register', component: Register, hidden: true },
-  { path: '/register/selectplan', name: '账户选择', component: SelectPlan, hidden: true },
+  //{ path: '/register/selectplan', name: '账户选择', component: SelectPlan, hidden: true },
   { path: '/blogPage', name: '博客', component: BlogPage, hidden: true},
 ]
 // Create a new router
@@ -67,6 +66,7 @@ export const asyncRouterMap = [
       {path: '/admin/income_detail', name: '收支统计', component: () => import('../views/AdminManagement/IncomeDetailPage.vue'),meta: { role: ['admin'] }},
       {path: '/admin/blog_create', name: '编辑文章', component: () => import('../views/AdminManagement/blogPageCreate.vue'),meta: { role: ['admin'] }},
       {path: '/admin/blog_list', name: '文章列表', component: () => import('../views/AdminManagement/blogList.vue'),meta: { role: ['admin'] }},
+      {path: '/admin/warehouse_list', name: '仓库列表', component: () => import('../views/AdminManagement/WarehouseList.vue'),meta: { role: ['admin'] }},
       
       {path: '/admin/mailbag_list', name: '邮袋列表', component: () => import('../views/AdminManagement/MailBagList.vue'),meta: { role: ['admin','operator'] }},
       {path: '/admin/mailbag_operation', name: '邮袋管理', component: () => import('../views/AdminManagement/MailBagOperation.vue'),meta: { role: ['admin','operator'] }},
@@ -83,12 +83,11 @@ export const asyncRouterMap = [
       {path: '/admin/all_invoice', name: '所有账单', component: () => import('../views/AdminManagement/AllInvoice.vue'),meta: { role: ['admin','operator'] }},
       {path: '/package/send_package', name: '我要发货', component: () => import('../views/UserOperation/SentPackage.vue')},
       {path: '/package/mypackage', name: '我的包裹', component: () => import('../views/UserOperation/MyPackage.vue')},
-      //{path: '/package/batch_mypackage', name: '大货包裹', component: () => import('../views/UserOperation/BatchMyPackage.vue'),meta: { role: ['batch & default','batch & premium'] }},
       {path: '/recipients', name: '收件人管理', component: () => import('../views/RecipientsList.vue')},
       {path: '/package/detail', name: '包裹详情', component: () => import('../views/UserOperation/UserPackageDetail.vue')},
       {path: '/add_recipient', name: '添加收件人', component: () => import('../views/UserOperation/AddRecipient.vue')},
       {path: '/deposit', name: '充值', component: () => import('../views/UserOperation/Deposit.vue')},
-      {path: '/payit', name: 'nihaoPay', component: () => import('../views/nihaopay.vue')},
+      {path: '/payit', name: 'xPay', component: () => import('../views/xpay.vue')},
       {path: '/invoice', name: '账单', component: () => import('../views/InvoiceList.vue')},
       {path: '/tracking_info', name: '包裹追踪', component: () => import('../views/Tracking.vue')},
       {path: '/account/upgrade', name: '账户升级', component: () => import('../views/UserSelect.vue')},

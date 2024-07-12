@@ -12,8 +12,7 @@
 			>
         <v-card class="mx-auto">
 					<v-col>
-						目前国内充值渠道不稳定，充值请联系客服<br>
-						quickpay或者paypal到账号admin@thelittleant.com
+						充值时遇到问题或不成功请及时联系客服
 					</v-col>
 					<v-row>
 						<v-col cols="3">
@@ -36,7 +35,7 @@
 							<v-text-field
 								label="金额"
 								v-model="depositAmount"
-								suffix="美元"
+								suffix="人民币"
 								@focus="focus($event)"
 							></v-text-field>
 						</v-col>
@@ -84,11 +83,12 @@
 	</v-container>
 </template>
 
-<script>	
+<script>
+	import QRCode from 'qrcode'
   export default {
     data: () => ({
-			paymentMethodList: ['Nihao Pay(微信支付)', 'Nihao Pay(银联支付)'],
-			paymentMethod: 'Nihao Pay(微信支付)',
+			paymentMethodList: ['微信支付', '支付宝'],
+			paymentMethod: '微信支付',
 			depositAmount: 0,
 			snackbar: false,
 			snackbarColor: '',
@@ -105,7 +105,7 @@
 			},
 
 			checkIsNumber: function(val) {
-		　　if (parseFloat(val).toString() == "NaN") {		　　　　
+				if (parseFloat(val).toString() == "NaN") {
 					return false;
 				} else {
 					return true;
@@ -113,17 +113,10 @@
 			},
 
 			deposit: function(){
-				/* let routerData = this.$router.resolve({path:'/payit',
-					query:{
-						amount: this.depositAmount,
-						method: this.paymentMethod,
-					}
-				});
-				window.open(routerData.href,'_blank'); */
 				if(this.checkIsNumber(this.depositAmount)){
-					this.$router.push({ name: 'nihaoPay', params: 
+					this.$router.push({ name: 'xPay', params: 
 						{
-							amount: this.depositAmount * 100,
+							amount: this.depositAmount,
 							method: this.paymentMethod,
 							storageNm: this.$store.state.user.storage_number,
 						}
@@ -131,7 +124,6 @@
 				}else{
 					alert('请输入有效数字');
 				}
-				
 			}
 		},
 		mounted() {

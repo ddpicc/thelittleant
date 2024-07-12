@@ -7,6 +7,11 @@
     <v-row justify="center">
       <v-col cols="12">
         <material-card>
+          <v-toolbar
+						flat
+					>
+						<v-btn @click="processCharge" text outlined>扣费</v-btn>
+					</v-toolbar>
           <v-data-table
             dense
             :headers="headers"
@@ -15,6 +20,8 @@
             :items-per-page="15"
             :search="searchStr"
             :custom-filter="filterText"
+            v-model="selected"
+            show-select
           >
           <template v-slot:top>
             <v-text-field v-model="searchStr" clearable label="搜索..." class="mx-4"></v-text-field>
@@ -106,7 +113,10 @@
 					<div class='title mt-6' align="center">
 						TRACKING: {{selectedPackage.tracking}}<br>
 						备注： {{selectedPackage.comment}}<br>
-						仓位号： {{selectedPackage.storage_number}} &nbsp;&nbsp;&nbsp;&nbsp; {{selectedPackage.service_type}}<br>
+						仓位号： {{selectedPackage.storage_number}}
+            <v-icon @click="changeStorageNmDialog = true">
+							mdi-pencil
+						</v-icon>
 					</div>
 					<v-divider
 						class="mt-6 mb-6"
@@ -168,6 +178,25 @@
 				</v-card-text>
 			</v-card>
 		</v-dialog>
+
+    <v-dialog max-width="800" persistent v-model="changeStorageNmDialog">
+      <v-card>
+        <v-text-field
+          v-model="newStorageNm"
+          label="仓位号"
+        ></v-text-field>
+        <v-card-actions class="justify-end">
+          <v-btn
+            text
+            @click="changeSure"
+          >确定</v-btn>
+          <v-btn
+            text
+            @click="closeChangeDialog"
+          >关闭</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
 		<!-- 扫描匹配内件信息 -->
 		<v-dialog
@@ -341,13 +370,13 @@ import { getNowTimeFormatDate } from '../../utils/helpFunction';
         },
         {
           sortable: false,
-          text: '类型',
-          value: 'service_type'
+          text: '第三方单号',
+          value: 'tracking'
         },
         {
           sortable: false,
-          text: '第三方单号',
-          value: 'tracking'
+          text: '重量',
+          value: 'weight'
         },
         {
           sortable: true,
@@ -442,6 +471,10 @@ import { getNowTimeFormatDate } from '../../utils/helpFunction';
       progressMsg: '',
       processStatus: 0,
       overlay: false,
+
+      changeStorageNmDialog: false,
+      newStorageNm: '',
+      selected: [],
     }),
 
     methods: {
@@ -457,6 +490,50 @@ import { getNowTimeFormatDate } from '../../utils/helpFunction';
         this.$router.push({ name: '添加包裹', params: {selectedPackage: packageItem}});
       },
 
+      closeChangeDialog: function(){
+        this.changeStorageNmDialog = false
+        this.newStorageNm = ''
+      },
+
+      changeSure: function(){
+        if(this.newStorageNm != ''){
+          this.$http.post('/api/package/assignNewStorageNumber',{
+            storage_number: this.newStorageNm,
+            package_Id: this.selectedPackage.id,
+          }).then( (res) => {
+            this.changeStorageNmDialog = false
+            this.selectedPackage.storage_number = this.newStorageNm
+          })
+        }
+      },
+
+      processCharge: function(){
+        for(let item of this.selected){
+          let chargeAmount = 0
+          if(item.weight <= 10){
+            chargeAmount = 7.2 * 5
+          }
+          if(item.weight > 10){
+            chargeAmount = (item.weight - 10 + 5) * 7.2
+          }
+                 
+          let chargeResult = new Promise((resolve, reject) => {
+            this.$http.post('/api/manualCharge',{
+              trackingNm: item.tracking,
+              chargeAmount: -1 * chargeAmount,
+              prev_balance: item.balance,
+              comment: '代收包裹扣费',
+              storage_number : item.storage_number,
+              type: '运费',
+              created_at: new Date().getTime(),
+            }).then( (res) => {
+              resolve(20);
+            })
+          })
+        }
+      },
+
+
       // 获取所有包裹
       getAll: function() {
         this.$http.get('/api/package/getAllThirdPartyPackage').then( (res) => {
@@ -467,6 +544,7 @@ import { getNowTimeFormatDate } from '../../utils/helpFunction';
 
             let iDays = Math.floor((today - instoredate) / (24 * 3600 * 1000));
             this.$set(item,'instore_day',iDays);
+            item.in_store_date = new Date(item.in_store_date).toLocaleString()
           }
         })
       },

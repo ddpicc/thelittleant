@@ -64,7 +64,7 @@
 								</v-card-text>
 							</v-card>
 						</v-tab-item>
-						<v-tab-item>
+						<!-- <v-tab-item>
 							<v-card flat>
 								<v-card-text>
 									<v-data-table
@@ -81,13 +81,12 @@
 										</template>
 										<template v-slot:item.action="{ item }">
                       <v-btn @click="jumpToMailBagOperation(item.id, item.name, item.vendor, item.status)" text outlined>打开</v-btn>
-                      <!-- <v-btn @click="updateStatus(item)" text outlined class="ml-2">更新状态</v-btn> -->
 										</template>
           				</v-data-table>
 								</v-card-text>
 							</v-card>
 						</v-tab-item>
-            <!-- <v-tab-item>
+            <v-tab-item>
 							<v-card flat>
 								<v-card-text>
 									<v-data-table
@@ -132,7 +131,7 @@
           				</v-data-table>
 								</v-card-text>
 							</v-card>
-						</v-tab-item>
+						</v-tab-item>  -->
             <v-tab-item>
 							<v-card flat>
 								<v-card-text>
@@ -154,7 +153,7 @@
           				</v-data-table>
 								</v-card-text>
 							</v-card>
-						</v-tab-item> -->
+						</v-tab-item>
 					</v-tabs-items>
 				</material-card>
 			</v-col>
@@ -329,7 +328,7 @@
           name: this.bagName,
           status: '处理中',
           vendor: this.vendor,
-          created_at: getNowTimeFormatDate(),
+          created_at: new Date().getTime(),
         }).then( (res) => {
           this.snackbar = true;
           this.notification = '创建成功';
@@ -373,7 +372,7 @@
         })
       },
 
-      updateStatus: function(mailBag){
+      /* updateStatus: function(mailBag){
         if(mailBag.status == '运往机场'){					
 					this.$http.post('/api/updateMailBagStatus',{
 						status: '发往中国',
@@ -415,7 +414,7 @@
             this.getAllBatch();
           })
 				}
-      },
+      }, */
 
       getAllBatch: function(){
         this.processingMailBagList = [];
@@ -427,13 +426,13 @@
           for(let item of res.data){
             if(item.status == '处理中'){
               this.processingMailBagList.push(item);
-            }else if(item.status == '运往机场'){
+            }/* else if(item.status == '运往机场'){
               this.toAirMailBagList.push(item);
             }else if(item.status == '发往中国'){
               this.inAirMailBagList.push(item);
             }else if(item.status == '开始清关'){
               this.atCustomerMailBagList.push(item);
-            }else if(item.status == '清关完成'){
+            } */else if(item.status == '交付完成'){
               this.afterCustomerMailBagList.push(item);
             }
             this.$http.get('/api/countChildPackageNmInBag',{

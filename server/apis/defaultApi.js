@@ -3,9 +3,10 @@ var async = require("async");
 const dbConfig = require('../db/db');
 const sqlMap = require('../sqlMaps/defaultSqlMap');
 const userSqlMap = require('../sqlMaps/userSqlMap');
-const twilio_util = require('../utils/twilioConfig');
 const mail_util = require('../utils/nodemailer')
-
+const md5 = require('md5')
+const axios = require('axios')
+const twilio_util = require('../utils/twilioConfig')
 
 const users = {};
 
@@ -92,7 +93,75 @@ function execTrans(sqlparamsEntities, callback) {
 
 module.exports = {
   
-  
+  handlexpay(req, res, next){
+    const aid = '700066';         //xorpay 用户 aid，在后台查看
+    const secret = '539da55343e1473f8ce111ec3b2b8688';      //xorpay 用户 secret，在后台查看
+    
+    var price = req.body.price, order_id = req.body.order_id;
+    var name = req.body.name, more = req.body.more;
+    let pay_data = {
+      'name': name,
+      'pay_type': 'alipay',
+      'price': price,
+      'order_id': order_id,
+      'more': more,
+      'notify_url': 'https://www.hughug-xx.com/api/handlexPayNotify',
+    };
+
+    pay_data['sign'] = md5(pay_data['name'] + pay_data['pay_type'] + pay_data['price'] + pay_data['order_id'] + pay_data['notify_url'] + secret);
+    //console.log(pay_data);
+
+    let query_string = Object.entries(pay_data).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
+
+    let _url = 'https://xorpay.com/api/pay/' + aid + '?' + query_string;
+    //console.log(_url);
+    axios.post(_url).then(function (response) {
+      //console.log(response)
+      res.send(response.data)
+    })
+  },
+
+  handlexPayNotify(req, res, next){
+    console.log('get xPay notify');
+    var order_id = req.body.order_id,amount = req.body.pay_price;
+    //console.log(JSON.stringify(req.body));
+    var pay_time = new Date().getTime(),storage_number = req.body.more;
+
+    console.log('storage number' + storage_number + ' deposit ' + amount);
+    var sqlParamsEntity = [];      
+    var sql1 = sqlMap.updateUserBalance;
+    sqlParamsEntity.push(_getNewSqlParamEntity(sql1, [amount,storage_number]));
+
+    var sql2 = sqlMap.insertxPayInvoice;
+    sqlParamsEntity.push(_getNewSqlParamEntity(sql2, ['充值',amount,amount,storage_number,'','xpay充值',order_id,pay_time]));
+
+
+    execTrans(sqlParamsEntity, function(err, info){
+      if(err){
+        console.error("事务执行失败");
+      }else{
+        console.log("done.");
+        res.send('ok');
+      }
+    })
+  },
+
+  existTheInvoice(req, res, next) {
+    console.log('api - existTheInvoice');
+    var theOrderId = req.query.theOrderId;
+    pool.getConnection((err, connection) => {
+      if(err)
+        console.log(err);
+      var sql = sqlMap.existTheInvoice;
+      connection.query(sql, [theOrderId], (err, result) => {
+        if(err)
+          console.log(err);
+        res.json(result);
+        connection.release();
+      })
+    })
+  },
+
   getBatchUser(req, res, next) {
     console.log('api - getBatchUser');
     var role = req.query.role;
@@ -197,15 +266,14 @@ module.exports = {
 
   
 
-  existUserEmailOrPhone(req, res, next) {
-    console.log('api - existUserEmailOrPhone');
+  existUserEmail(req, res, next) {
+    console.log('api - existUserEmail');
     var email = req.query.email;
-    var phone = req.query.phone;
     pool.getConnection((err, connection) => {
       if(err)
         console.log(err);
-      var sql = sqlMap.existUserEmailOrPhone;
-      connection.query(sql, [email,phone], (err, result) => {
+      var sql = sqlMap.existUserEmail;
+      connection.query(sql, [email], (err, result) => {
         if(err)
           console.log(err);
         res.json(result);
@@ -406,44 +474,43 @@ module.exports = {
   },
   
 
-  async sendPhoneCode(req, res, next){
+  /* async sendPhoneCode(req, res, next){
     var phone = req.query.phoneNm;
     var code  = twilio_util.randomCode(4);
     console.log('api - send verification code '+ code + ' to ' + phone);
-    status = await twilio_util.sendCode(phone, code);
+    let status = await twilio_util.sendCode(phone, code);
     if(status == 'success'){
       users[phone] = code;
       res.send({code: 1, msg: '验证码发送成功'});
     }else{
       res.send({code: 0, msg: '验证码发送失败，请重试或联系管理员'});
     }    
-  },
+  }, */
 
-  verifyPhoneCode(req, res, next){
-    console.log('api - verifyPhoneCode');
-    var phone = req.body.phoneNm;
+  verifyMailCode(req, res, next){
+    console.log('api - verifyMailCode');
+    var email = req.body.email;
     var code = req.body.code;
-    if (users[phone] != code) {
-      console.log('手机号或验证码不正确');
-      res.send({code: 0, msg: '手机号或验证码不正确'});
+    if (users[email] != code) {
+      console.log('邮箱或验证码不正确');
+      res.send({code: 0, msg: '邮箱或验证码不正确'});
       return;
     }
     console.log('验证码正确');
     res.send({code: 1, msg: '验证码正确'});
     //删除保存的code
-    delete users[phone];
+    delete users[email];
   },
 
   sendMailCode(req, res, next){
     var email = req.query.email;
-    var phone = req.query.phoneNm;
     var code  = twilio_util.randomCode(4);
     console.log('api - send verification code '+ code + ' to ' + email);
     mail_util.mail(email,'验证码',code + '',function (err,data) {
       if (err) {
         res.send({code: 0, msg: '验证码发送失败，请重试或联系管理员'});
       } else {
-        users[phone] = code;
+        users[email] = code;
         res.send({code: 1, msg: '验证码发送成功'});
       }
     });
@@ -455,9 +522,12 @@ module.exports = {
     var email = req.body.email,password = req.body.password;
     var token = req.body.token, role = req.body.role;
     var name = req.body.name, user_phone = req.body.phoneNm;
+    var invite_number = req.body.invite_number;
     pool.getConnection((err, connection) => {
       var sql = sqlMap.registerUser;
-      connection.query(sql, [storage_number,email,password,token,role,name,user_phone], (err, result) => {
+      connection.query(sql, [storage_number,email,password,token,role,name,user_phone,invite_number], (err, result) => {
+        if(err)
+          console.log(err);
         res.json(result);
           connection.release();
       })
@@ -1016,5 +1086,70 @@ module.exports = {
     })
   },
 
+  getWarehouseAddress(req, res, next) {
+    console.log('api - getWarehouseAddress');
+    pool.getConnection((err, connection) => {
+      if(err)
+        console.log(err);
+      var sql = sqlMap.getWarehouseAddress;
+      connection.query(sql,(err, result) => {
+        if(err)
+          console.log(err);
+        res.json(result);
+        connection.release();
+      })
+    })
+  },
+
+  updateWarehousebyId(req, res, next) {
+    console.log('api - updateWarehousebyId');
+    var alias = req.body.alias,first_name = req.body.first_name;
+    var last_name = req.body.last_name,city = req.body.city;
+    var state = req.body.state,door_number = req.body.door_number;
+    var address = req.body.address,zip = req.body.zip;
+    var phone = req.body.phone,id = req.body.id;
+    pool.getConnection((err, connection) => {
+      var sql = sqlMap.updateWarehousebyId;
+      connection.query(sql, [alias,first_name,last_name,city,state,door_number,address,zip,phone,id], (err, result) => {
+        if(err)
+          console.log(err);
+        res.json(result);
+          connection.release();
+      })
+    })
+  },
   
+  saveWarehouseAddress(req, res, next) {
+    console.log('api - saveWarehouseAddress');
+    var alias = req.body.alias,first_name = req.body.first_name;
+    var last_name = req.body.last_name,city = req.body.city;
+    var state = req.body.state,door_number = req.body.door_number;
+    var address = req.body.address,zip = req.body.zip;
+    var phone = req.body.phone;
+    pool.getConnection((err, connection) => {
+      var sql = sqlMap.saveWarehouseAddress;
+      connection.query(sql, [alias,first_name,last_name,city,state,door_number,address,zip,phone], (err, result) => {
+        if(err)
+          console.log(err);
+        res.json(result);
+          connection.release();
+      })
+    })
+  },
+  
+
+  
+  deleteWarehousebyId(req, res, next) {
+    console.log('api - deletePackagebybyId');
+    var id = req.query.id;
+    pool.getConnection((err, connection) => {
+      var sql = sqlMap.deleteWarehousebyId;
+      connection.query(sql, [id], (err, result) => {
+        if(err)
+          console.log(err);
+        res.json(result);
+          connection.release();
+      })
+    })
+  },
 }

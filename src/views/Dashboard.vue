@@ -37,13 +37,13 @@
               ></v-divider>
               <br>
               <br>
-              <div v-if="roles == 'default'" class="mx-2">普通用户<v-chip dark class="ml-3" @click="jumpToAccountUpgrade">升级</v-chip></div>
-              <div v-if="roles == 'premium'" class="mx-2">高级用户<v-chip dark class="ml-3" @click="jumpToAccountUpgrade">更改</v-chip></div>
+              <div v-if="roles == 'default'" class="mx-2">普通用户<!-- <v-chip dark class="ml-3" @click="jumpToAccountUpgrade">升级</v-chip> --></div>
+              <div v-if="roles == 'premium'" class="mx-2">高级用户<!-- <v-chip dark class="ml-3" @click="jumpToAccountUpgrade">更改</v-chip> --></div>
               <div v-if="roles == 'admin'" class="mx-2">管理员</div>
               <br>
               <div class="mx-2">用户识别码： {{storeNm}}</div>
               <div class="mx-2">手机号码：{{phoneNm}}</div>
-              <div class="mx-2">账户余额： {{balance}} 美元 &nbsp;&nbsp; <span v-if="this.$store.state.user.balance < 3" style="color: red">余额不足，请尽快充值</span></div>
+              <div class="mx-2">账户余额： {{balance}} 元 &nbsp;&nbsp; <span v-if="this.$store.state.user.balance < 3" style="color: red">余额不足，请尽快充值</span></div>
               <br>
               <br>
             </v-list-item-content>
@@ -66,19 +66,16 @@
         >
           <v-list rounded>
             <v-subheader>美国代收地址</v-subheader>
-            <v-list-item-group
-              v-model="selectedItem"
-              color="primary"
-            >
+
               <v-list-item
-                v-for="(item, i) in warehouseList"
-                :key="i"
+                v-for="warehouse in warehouseList"
+                :key="warehouse.id"
               >
                 <v-list-item-content>
-                  <v-list-item-title v-text="item.text"></v-list-item-title>
+                  <v-list-item-title class="clickList" @click="showAddress(warehouse)">{{ warehouse.alias }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-            </v-list-item-group>
+
           </v-list>
         </v-card>
       </v-col>
@@ -140,6 +137,29 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog
+      v-model="addressDialog"
+      width="500"
+    >
+      <v-card class="pa-5">
+        <div class="title">{{ theWarehouse.alias }}</div>
+        <div>First Name：{{ theWarehouse.first_name }} Last Name：{{ theWarehouse.last_name }}</div>
+        <div>城市：{{ theWarehouse.city }} 州/省：{{ theWarehouse.state }}</div>
+        <div>地址：{{ theWarehouse.address }}</div>
+        <div>门牌号：{{ theWarehouse.door_number }} (必填）</div>
+        <div>邮编：{{ theWarehouse.zip }} 电话：{{ theWarehouse.phone }}</div>
+        
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            text
+            @click="addressDialog = false"
+          >
+            关闭
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-snackbar
       v-model="snackbar"
       :color="snackbarColor"
@@ -175,22 +195,17 @@
         balance: this.$store.state.user.balance,
         roles: this.$store.state.user.roles,
         phoneNm: '',
-        address: '',
         snackbar: false,
         snackbarColor: '',
         notification: '',
         infos: [],
         page: 1,
         blogDialog: false,
+        addressDialog: false,
         title: '',
         content: '',
-        warehouseList: [
-          { text: 'Real-Time' },
-          { text: 'Audience' },
-          { text: 'Conversions' },
-          { text: 'Audience' },
-          { text: 'Conversions' },
-        ],
+        warehouseList: [],
+        theWarehouse: {},
       }
     },
 
@@ -216,6 +231,14 @@
         this.$router.push({ path: '/account/upgrade' });
       },
 
+      showAddress: function(item){
+        
+        this.addressDialog = true
+        this.theWarehouse = item
+        //Object.assign(this.theWarehouse,item)
+        
+      },
+
       viewPage: function(item){
         this.blogDialog = true;
         this.title = item.title;
@@ -230,12 +253,15 @@
 					}
         }).then( (res) => {
           this.phoneNm = res.data[0].user_phone;
-          this.address = res.data[0].user_address;
         }),
 
         this.$http.get('/api/news/getAllNews').then( (res) => {
           this.infos = res.data;
         });
+
+        this.$http.get('/api/getWarehouseAddress').then( (res) => {
+          this.warehouseList = res.data
+        })
       },
 
     },
@@ -245,4 +271,9 @@
 		}
   }
 </script>
+<style scoped>
+  .clickList{
+    cursor: pointer;
+  }
+</style>
 

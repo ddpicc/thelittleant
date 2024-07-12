@@ -4,6 +4,20 @@ const api = require('./apis/defaultApi');
 const userapi = require('./apis/user');
 
 
+router.post('/handlexpay', (req, res, next) => {
+  api.handlexpay(req, res, next);
+});
+
+//nihaopay notify 不知道是不是这样调用
+router.post('/handlexPayNotify', (req, res, next) => {
+	api.handlexPayNotify(req, res, next);  
+});
+
+router.get('/existTheInvoice', (req, res, next) => {
+  api.existTheInvoice(req, res, next);
+});
+
+
 router.get('/getTokenFromLogin', (req, res, next) => {
   userapi.getTokenFromLogin(req, res, next);
 });
@@ -67,8 +81,8 @@ router.get('/existStorageNumber', (req, res, next) => {
 
 
 
-router.get('/existUserEmailOrPhone', (req, res, next) => {
-  api.existUserEmailOrPhone(req, res, next);
+router.get('/existUserEmail', (req, res, next) => {
+  api.existUserEmail(req, res, next);
 });
 
 router.get('/existUserPhone', (req, res, next) => {
@@ -110,12 +124,6 @@ router.get('/getVendorTrackingByLittleAntNo', (req, res, next) => {
 
 
 
-//nihaopay notify 不知道是不是这样调用
-router.post('/nihaopay_notify', (req, res, next) => {
-	console.log('nihaopay notify');
-	console.log(req.data.status);
-});
-
 router.post('/manualCharge', (req, res, next) => {
   api.manualCharge(req, res, next);
 });
@@ -131,8 +139,8 @@ router.get('/sendPhoneCode', (req, res, next) => {
 });
 
 //注册验证短信验证码
-router.post('/verifyPhoneCode', (req, res, next) => {
-  api.verifyPhoneCode(req, res, next);
+router.post('/verifyMailCode', (req, res, next) => {
+  api.verifyMailCode(req, res, next);
 });
 
 //发送邮箱验证码
@@ -308,5 +316,21 @@ router.get('/getVendorTracking', (req, res, next) => {
   api.getVendorTracking(req, res, next);  
 });
 
+//仓库地址相关
 
+router.get('/getWarehouseAddress', (req, res, next) => {
+  api.getWarehouseAddress(req, res, next);  
+});
+
+router.post('/updateWarehousebyId', (req, res, next) => {
+  api.updateWarehousebyId(req, res, next);
+});
+
+router.post('/saveWarehouseAddress', (req, res, next) => {
+  api.saveWarehouseAddress(req, res, next);
+});
+
+router.delete('/deleteWarehousebyId', (req, res, next) => {
+  api.deleteWarehousebyId(req, res, next);
+});
 module.exports = router;

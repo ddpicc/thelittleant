@@ -15,7 +15,7 @@
     				<template v-slot:default>
 							<tbody class="text-center">
 								<tr>
-									<td>小蚂蚁单号</td>
+									<td>抱抱转运单号</td>
 									<td>{{userPackage[0].litlleant_tracking_number}}
 										<v-btn
 											small

@@ -8,10 +8,10 @@ module.exports = {
     var forcast_tracking = req.body.forcast_tracking, carrier = req.body.carrier;
     var target_warehouse = req.body.target_warehouse, forcast_weight = req.body.forcast_weight;
     var arrive_at = req.body.arrive_at, need_photo = req.body.need_photo;
-    var need_firm = req.body.need_firm, comment = req.body.comment;
+    var comment = req.body.comment;
     var storage_number = req.body.storage_number, need_split = req.body.need_split;
 		var sql = sqlMap.createForcastInfo;
-		db.query(sql, [forcast_tracking,carrier,target_warehouse,storage_number,forcast_weight,arrive_at,need_photo,need_firm,need_split,comment], (err, result) => {
+		db.query(sql, [forcast_tracking,carrier,target_warehouse,storage_number,forcast_weight,arrive_at,need_photo,need_split,comment], (err, result) => {
 			if(err)
 				console.log(err);  
 			res.json(result);
@@ -84,9 +84,9 @@ module.exports = {
     var storage_number = req.body.storage_number, tracking = req.body.tracking;
     var comment = req.body.comment, status = req.body.status;
     var inner_count = req.body.inner_count, storage_area = req.body.storage_area;
-    var in_store_date = req.body.instore_date;
+    var weight = req.body.weight, in_store_date = req.body.instore_date;
 		var sql = sqlMap.insertThirdPartyPackage;
-		db.query(sql, [storage_number,tracking,comment,in_store_date,inner_count,storage_area,status], (err, result) => {
+		db.query(sql, [storage_number,tracking,comment,weight,in_store_date,inner_count,storage_area,status], (err, result) => {
 			if(err)
 				console.log(err);  
 			res.json(result);
@@ -156,6 +156,18 @@ module.exports = {
     db.query(sql, [id], (err, result) => {
       if(err)
         console.log(err);
+      res.json(result);
+    })
+  },
+
+  assignNewStorageNumber(req, res, next) {
+    console.log('api - assignNewStorageNumber');
+    var storage_number = req.body.storage_number;
+    var id = req.body.package_Id;
+    var sql = sqlMap.assignNewStorageNumber;
+    db.query(sql, [storage_number,id], (err, result) => {
+      if(err)
+        console.log(err);  
       res.json(result);
     })
   },

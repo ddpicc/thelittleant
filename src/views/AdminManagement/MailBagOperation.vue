@@ -375,7 +375,7 @@
 				headers: [
 					{
 						sortable: false,
-						text: '小蚂蚁单号',
+						text: '抱抱转运单号',
 						value: 'child_tracking_number'
 					},
 					{
@@ -405,8 +405,8 @@
 				],
 				addPackageMenu: [
 					{title: '一键导入没有填快递单号的包裹'},
-					{title: '扫描小蚂蚁单号添加'},
-					{title: '根据小蚂蚁单号选择'}
+					{title: '扫描抱抱转运单号添加'},
+					{title: '根据抱抱转运单号选择'}
 				],
 
 				//导入快递单
@@ -419,7 +419,7 @@
 				selectPackageheaders: [
 					{
 						sortable: false,
-						text: '小蚂蚁单号',
+						text: '抱抱转运单号',
 						value: 'child_tracking_number'
 					},
 					{
@@ -438,8 +438,8 @@
 
 				//导入导出excel
 				excelExportDialog: false,
-				exportCol: ['收件人信息','包裹重量','包裹运费','包裹申报信息','包裹描述','小蚂蚁单号','服务商单号'],
-				allCols: ['收件人信息','包裹重量','包裹运费','包裹申报信息','包裹描述','小蚂蚁单号','服务商单号'],
+				exportCol: ['收件人信息','包裹重量','包裹运费','包裹申报信息','包裹描述','抱抱转运单号','服务商单号'],
+				allCols: ['收件人信息','包裹重量','包裹运费','包裹申报信息','包裹描述','抱抱转运单号','服务商单号'],
 				filename: '发货单',
 				sheet:[],
 
@@ -656,7 +656,7 @@
             this.snackbar = true;
             this.notification = '更新成功';
             this.snackbarColor = 'green';
-						this.mailBag_status = '运往机场';
+						this.mailBag_status = '交付完成';
           })
 				}/* else if(status == '运往机场'){
 					
@@ -736,7 +736,7 @@
 					}
 				}).then( (resk) => {
 					this.sheet.push({
-						tHeader:["小蚂蚁单号","国内快递单号","渠道","重量","收件人","电话","身份证","地址","城市","省份","申报物品类型","名称","价钱","数量","品牌"],
+						tHeader:["抱抱转运单号","国内快递单号","渠道","重量","收件人","电话","身份证","地址","城市","省份","申报物品类型","名称","价钱","数量","品牌"],
 						table: resk.data,
 						keys:["child_tracking_number","vendor_tracking_number","vendor","weight","to_name","to_phone","to_identity_card","to_address","to_city","to_state","type","item_name","price","unit","brand"],
 						sheetName:"发货单"

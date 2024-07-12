@@ -8,7 +8,8 @@
       <v-col cols="12">
         <v-item-group mandatory active-class="primary" v-model="targetWarehouse">
           <v-row>
-            <v-col
+            <v-col v-for="warehouse in warehouseList"
+              :key="warehouse.id"
               cols="12"
               md="4"
             >
@@ -18,88 +19,12 @@
                   height="180"
                   @click="toggle"
                 >
-                    <div class="title">费城1001</div>
-                    <div>First Name：识别码 Last Name：XU</div>
-                    <div>城市：philadelphia 州/省：Pennsylvania</div>
-                    <div>县/郡：PA 门牌号：1202 (必填）</div>
-                    <div>地址：1001 vine st</div>
-                    <div>邮编：19107 电话：2672650980</div>
-                </v-card>
-              </v-item>
-            </v-col>
-            <v-col
-              cols="12"
-              md="4"
-            >
-              <v-item v-slot="{ active, toggle }">
-                <v-card
-                  class="pa-3"
-                  height="180"
-                  @click="toggle"
-                >
-                    <div class="title">费城2501</div>
-                    <div>First Name：XUEXIN+识别码 Last Name：XU</div>
-                    <div>城市：philadelphia 州/省：Pennsylvania</div>
-                    <div>县/郡：PA 门牌号：CHT2806-1</div>
-                    <div>地址：2501 wharton st unit S</div>
-                    <div>邮编：19146 电话：2672650980</div>
-                </v-card>
-              </v-item>
-            </v-col>
-            <v-col
-              cols="12"
-              md="4"
-            >
-              <v-item v-slot="{ active, toggle }">
-                <v-card
-                  class="pa-3"
-                  height="180"
-                  @click="toggle"
-                >
-                    <div class="title">费城3720</div>
-                    <div>First Name：识别码 Last Name：XU</div>
-                    <div>城市：philadelphia 州/省：Pennsylvania</div>
-                    <div>县/郡：PA 门牌号：2806</div>
-                    <div>地址：3720 Chestnut Street</div>
-                    <div>邮编：19104 电话：2672650980</div>
-                </v-card>
-              </v-item>
-            </v-col>
-            <v-col
-              cols="12"
-              md="4"
-            >
-              <v-item v-slot="{ active, toggle }">
-                <v-card
-                  class="pa-3"
-                  height="180"
-                  @click="toggle"
-                >
-                    <div class="title">费城3720</div>
-                    <div>First Name：识别码 Last Name：XU</div>
-                    <div>城市：philadelphia 州/省：Pennsylvania</div>
-                    <div>县/郡：PA 门牌号：2806</div>
-                    <div>地址：3720 Chestnut Street</div>
-                    <div>邮编：19104 电话：2672650980</div>
-                </v-card>
-              </v-item>
-            </v-col>
-            <v-col
-              cols="12"
-              md="4"
-            >
-              <v-item v-slot="{ active, toggle }">
-                <v-card
-                  class="pa-3"
-                  height="180"
-                  @click="toggle"
-                >
-                    <div class="title">费城3720</div>
-                    <div>First Name：识别码 Last Name：XU</div>
-                    <div>城市：philadelphia 州/省：Pennsylvania</div>
-                    <div>县/郡：PA 门牌号：2806</div>
-                    <div>地址：3720 Chestnut Street</div>
-                    <div>邮编：19104 电话：2672650980</div>
+                  <div class="title">{{ warehouse.alias }}</div>
+                  <div>First Name：{{ warehouse.first_name }} Last Name：{{ warehouse.last_name }}</div>
+                  <div>城市：{{ warehouse.city }} 州/省：{{ warehouse.state }}</div>
+                  <div>地址：{{ warehouse.address }}</div>
+                  <div>门牌号：{{ warehouse.door_number }} (必填）</div>
+                  <div>邮编：{{ warehouse.zip }} 电话：{{ warehouse.phone }}</div>
                 </v-card>
               </v-item>
             </v-col>
@@ -142,10 +67,6 @@
               label="是否需要拍照(需要拍照请点击勾选方框)"
             ></v-checkbox>
 
-            <v-checkbox
-              v-model="needFirm"
-              label="是否需要加固(额外收费，需要加固请点击勾选方框)"
-            ></v-checkbox>
 
             <v-checkbox
               v-model="needSplit"
@@ -210,9 +131,10 @@
       forcastWeight: '',
       forcastArriveTime: '',
       needPhoto: false,
-      needFirm: false,
       needSplit: false,
       comment: '',
+
+      warehouseList: [],
 
       snackbar: false,
       snackbarColor: '',
@@ -229,8 +151,7 @@
           forcast_weight : this.forcastWeight,
           arrive_at : new Date().getTime(),
           need_photo: this.needPhoto,
-          need_firm : this.needFirm,
-          needSplit: this.needSplit,
+          need_split: this.needSplit,
           comment : this.comment,
           storage_number: this.$store.state.user.storage_number,
           service_type: '国际转运',
@@ -247,6 +168,15 @@
       resetValidation () {
         this.$refs.form.resetValidation()
       },
+
+      getAll: function() {
+        this.$http.get('/api/getWarehouseAddress').then( (res) => {
+          this.warehouseList = res.data
+        })
+      },
     },
+    mounted: function() {
+      this.getAll();
+		}
   }
 </script>

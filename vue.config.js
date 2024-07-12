@@ -13,20 +13,13 @@ module.exports = {
           '^/api': ''
         }
       },
-      '/payapi': {
-        target: 'https://api.nihaopay.com/v1.2',
+      '/getTracking': {
+        target: 'https://www.qq-ex.com/user/h0trace_api/',
         changeOrigin: true,
         pathRewrite: {
-          '^/payapi': ''
+          '^/getTracking': ''
         }
-      },
-      '/getWeight': {
-        target: 'http://localhost:8080/',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/getWeight': ''
-        }
-      },
+      }
     },
     overlay: {
       warnings: false,

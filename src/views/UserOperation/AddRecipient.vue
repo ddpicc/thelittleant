@@ -182,7 +182,6 @@
       },
 
       save: function(){
-        console.log('111')
         if(this.recipientId != undefined){
           this.$http.post('/api/updateRecipientbyId',{   
               recipientName : this.recipientName,

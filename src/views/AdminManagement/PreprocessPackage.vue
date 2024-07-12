@@ -115,19 +115,28 @@
 							匹配到预报信息
 						</div>
 
+						<div><svg id="barcode"></svg></div>
 						<v-card v-if="finishScan && findPackage">
 							<v-card-text>
-								<div>
-									TRACKING: {{scaned_tracking}}<br>
-									备注： {{comment}}<br>
-									仓位号： {{storage_number}} &nbsp;&nbsp;&nbsp;&nbsp; {{service_type}}<br>
-									是否拍照: {{ need_photo }}<br>
-									是否加固: {{ need_firm }}<br>
-									是否拆箱合箱: {{ need_split }}
-								</div>
+
+									<div>
+										TRACKING: {{scaned_tracking}}<br>
+										备注： {{comment}}<br>
+										仓位号： {{storage_number}} &nbsp;&nbsp;&nbsp;&nbsp; {{service_type}}<br>
+										是否拍照: {{ need_photo }}<br>
+										是否拆箱合箱: {{ need_split }}
+									</div>
+									
+
+								
 								<v-divider
 									class="mt-6 mb-6"
 								></v-divider>
+								<v-text-field
+									v-model="weight"
+									label="包裹重量"
+									suffix="磅"
+								></v-text-field>
 								<v-select
 									outlined
 									v-model="packageType"
@@ -149,10 +158,16 @@
 								<div>
 									<div class="title">无主入库</div>
 									TRACKING: {{scaned_tracking}}<br>
+									仓位号： {{storage_number}}
 								</div>
 								<v-divider
 									class="mt-6 mb-6"
 								></v-divider>
+								<v-text-field
+									v-model="weight"
+									label="包裹重量"
+									suffix="磅"
+								></v-text-field>
 								<v-select
 									outlined
 									v-model="itemType"
@@ -234,13 +249,13 @@
 					</v-card-text>
 					<v-card-actions class="justify-end">
 						<v-btn
-						v-if="need_split == '否'"
+						v-if="!checkItem"
 							text
 							id="checkBtn"
 							@click="createThirdpartyPackage()"
 						>确认</v-btn>
 						<v-btn
-							v-if="need_split == '是'"
+							v-if="checkItem"
 							text
 							id="checkBtn"
 							@click="createThirdpartyPackageAndItem()"
@@ -418,6 +433,7 @@
 </template>
 
 <script>
+	import jsbarcode from 'jsbarcode'
 	export default {
     data: () => ({
 			tab: null,
@@ -433,7 +449,7 @@
 				{
 					sortable: false,
           text: '预报地址',
-          value: 'target_warehouse'
+          value: 'alias'
 				},
         {
           sortable: false,
@@ -444,11 +460,6 @@
           sortable: false,
           text: '仓位号',
           value: 'storage_number'
-        },
-				{
-          sortable: true,
-          text: '类型',
-          value: 'service_type',
         },
         {
           sortable: false,
@@ -471,8 +482,8 @@
 			comment: '',
 			service_type: '',
 			need_photo: '',
-			need_firm: '',
 			need_split: '',
+			weight: '',
 
 			snackbar: false,
       snackbarColor: '',
@@ -570,9 +581,6 @@
           this.forcastInfoList = res.data;
 					for(let item of this.forcastInfoList){
             item.arrive_at = new Date(item.arrive_at).toLocaleString()
-						if(item.target_warehouse == 0){
-							item.target_warehouse = '费城101'
-						}
           }
         })
       },
@@ -605,6 +613,13 @@
           this.findPackage = false;
           return;
         }
+				jsbarcode(
+					'#barcode',
+					this.scaned_tracking.trim(),
+					{
+						displayValue: true // 是否在条形码下方显示文字
+					}
+				)
         this.$http.get('/api/package/existForcastPackage',{
           params: {
             forcast_tracking: this.scaned_tracking.trim(),
@@ -613,6 +628,7 @@
 					this.finishScan = true
           if(res.data.length === 0){
 						this.findPackage = false;
+						this.storage_number = 'AAAAA'
 					}else{
 						this.findPackage = true;
 						this.storage_number = res.data[0].storage_number;
@@ -620,18 +636,23 @@
 						this.service_type = res.data[0].service_type;
 						this.forcastInfoId = res.data[0].id;
 						this.need_photo = res.data[0].need_photo != 1? '否' : '是'
-						this.need_firm = res.data[0].need_firm != 1? '否' : '是'
-						this.need_split = res.data[0].need_split != 1? '是' : '否'
-						this.checkItem = res.data[0].need_split != 1? '是' : '否'
+						this.need_split = res.data[0].need_split != 1? '否' : '是'
+						if(res.data[0].need_photo || res.data[0].need_split){
+							this.checkItem = true
+						}
 					}
 				})
 			},
 
 			createThirdpartyPackage: function(){
+				if(this.storage_number == ''){
+          return;
+        }
 				this.$http.post('/api/package/insertThirdPartyPackage',{
 					storage_number : this.storage_number,
 					tracking : this.scaned_tracking,          
 					comment : this.comment,
+					weight : this.weight,
 					status : '已清点',
 					inner_count: this.inner_count,
 					storage_area: this.storage_area,
@@ -643,6 +664,7 @@
 						itemCount : 1,
 						itemTemplate_Id: 1,
 					})
+					
 					this.snackbar = true;
           this.notification = '入库成功';
           this.snackbarColor = 'green';
@@ -660,6 +682,7 @@
 					storage_number : this.storage_number,
 					tracking : this.scaned_tracking,
 					comment : this.comment,
+					weight : this.weight,
 					status : '已清点',
 					inner_count: this.inner_count,
 					storage_area: this.storage_area,
@@ -677,7 +700,14 @@
 					alert('需要录入内件信息')
 					return
 				}
-				this.$http.post('/api/package/insertThirdPartyPackage',{
+				this.checkItem = false
+				this.scaned_tracking = '';
+				this.findPackage = false;
+				this.storage_area = ''
+				this.inner_count = ''
+				this.finishScan = false
+				this.$refs.mark2.$el.querySelector('input').focus();
+				/* this.$http.post('/api/package/insertThirdPartyPackage',{
 					storage_number : this.storage_number,
 					tracking : this.scaned_tracking,
 					comment : this.comment,
@@ -689,7 +719,7 @@
 					this.deleteForcastInfo(this.forcastInfoId)
 					this.checkItem = true
 				})
-				this.checkItem = true
+				this.checkItem = true */
 			},
 
 
@@ -806,16 +836,6 @@
 				})
 			},
 
-			finishCheckItem: function(){
-				//更新保存照片信息
-				this.$http.post('/api/package/updateThirdPartyPackage',{
-					status: '已清点',
-					package_Id: this.newCreatedPackageId,
-				}).then( (res) => {
-					this.checkDialog = false;
-					this.getTodayandUncheckedThirdPartyPackage();
-				})
-			},
 
 			cancelCheckItem: function(){
 				//删掉所有前面创建的item
@@ -900,7 +920,7 @@
 
     mounted: function() {
       this.getForcastInfo();
-			this.getTodayandUncheckedThirdPartyPackage();
+			//this.getTodayandUncheckedThirdPartyPackage();
     },
 	}
 </script>

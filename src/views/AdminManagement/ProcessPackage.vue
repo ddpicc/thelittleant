@@ -8,7 +8,7 @@
       <v-col cols="12">
         <material-card>          
           <div class="overline mb-4">包裹信息</div>
-          <h3 style="display: inline">小蚂蚁单号：{{selectedPackage.litlleant_tracking_number}}</h3>
+          <h3 style="display: inline">抱抱转运单号{{selectedPackage.litlleant_tracking_number}}</h3>
           <v-btn
             small
             plain
@@ -615,7 +615,7 @@
       errorInfo: '',
       errorList: ['身份证有误','余额不足','收件人信息有误','申报信息有误'],
       
-      vendorList: ['新元快递','TST速运通','青岛中通','沈阳圆通'],
+      vendorList: ['QQ快递'],
       vendor: '',
       showVendor: false,
 
@@ -929,7 +929,7 @@
             comment: '发货时自动扣费',
             storage_number : this.selectedPackage.storage_number,
             type: '运费',
-            created_at: getNowFormatDate(),
+            created_at: new Date().getTime(),
           }).then( (res) => {
             resolve(20);
           })
@@ -941,7 +941,7 @@
           this.$http.post('/api/setPackageWeightandStatus',{
             status: '已处理',
             total_weight: this.inUSactualWeight? this.inUSactualWeight : 0 ,
-            finishprocess_time: getNowTimeFormatDate(),
+            finishprocess_time: new Date().getTime(),
             total_price: chargeAmount,
             packageId: this.selectedPackage.id,
           }).then( (res) => {
@@ -1088,7 +1088,7 @@
             comment: '发货时自动扣费',
             storage_number : this.selectedPackage.storage_number,
             type: '运费',
-            created_at: getNowFormatDate(),
+            created_at: new Date().getTime(),
           }).then( (res) => {
             resolve(20);
           })
@@ -1100,7 +1100,7 @@
           this.$http.post('/api/package/setPackageWeightandStatus',{
             status: '已处理',
             total_weight: this.totalWeight,
-            finishprocess_time: getNowTimeFormatDate(),
+            finishprocess_time: new Date().getTime(),
             total_price: this.totalPrice,
             packageId: this.selectedPackageId,
           }).then( (res) => {

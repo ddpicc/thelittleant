@@ -319,7 +319,7 @@
       headers: [
         {
           sortable: false,
-          text: '小蚂蚁单号',
+          text: '抱抱转运单号',
           value: 'litlleant_tracking_number'
         },
         {
@@ -642,8 +642,16 @@
 					for(let item of this.forcastPackageList){
             item.arrive_at = new Date(item.arrive_at).toLocaleString()
 						if(item.target_warehouse == 0){
-							item.target_warehouse = '费城101'
-						}
+							item.target_warehouse = '费城1001'
+						}else if(item.target_warehouse == 1){
+              item.target_warehouse = '费城2501'
+            }else if(item.target_warehouse == 2){
+              item.target_warehouse = '费城3720'
+            }else if(item.target_warehouse == 3){
+              item.target_warehouse = '费城2501'
+            }else{
+              item.target_warehouse = '费城2501'
+            }
           }
         })
       },

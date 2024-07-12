@@ -1,6 +1,6 @@
 export const lang = {
     login_menu: 'Login',
-    home: 'The Little Ant',
+    home: '抱抱转运',
     login_title: 'Member Login',
     login_email: 'Email Address',
     login_password: 'Password',

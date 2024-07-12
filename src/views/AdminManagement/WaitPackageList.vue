@@ -15,9 +15,6 @@
             <v-chip @click="filterPackage('发往中国')" class="mr-3">发往中国:  {{waitChinaPackageNm}}</v-chip>
             <v-chip @click="filterPackage('美国境内')" class="mr-3">美国境内:  {{waitUSPackageNm}}</v-chip>
             <v-chip @click="filterPackage('仓库自提')" class="mr-3">仓库自提:  {{waitSelfPackageNm}}</v-chip>
-            <v-spacer></v-spacer>
-            <v-chip @click="filterUserPackage(1)"  dark class="mr-3">小蚂蚁用户</v-chip>            
-            <v-chip @click="filterUserPackage(2)"  dark class="mr-3">sherry用户</v-chip>    
           </v-toolbar>
         </v-card>
       </v-col>
@@ -143,7 +140,7 @@
         },
         {
           sortable: false,
-          text: '小蚂蚁单号',
+          text: '抱抱转运单号',
           value: 'litlleant_tracking_number'
         },
         {
@@ -269,19 +266,6 @@
         this.searchStr = searchStr;
       },
 
-      filterUserPackage: function(type){
-        this.items = this.backupItems;
-        if(type == 1){
-          this.items = this.items.filter((item) => {
-            return item.rateTable_id == 1 || item.rateTable_id == 3
-          })
-        }else{
-          this.items = this.items.filter((item) => {
-            return item.rateTable_id == 2
-          })
-        }
-        
-      }
     },
 
     mounted: function() {

@@ -139,7 +139,7 @@
         },
         {
           sortable: false,
-          text: '小蚂蚁单号',
+          text: '转运单号',
           value: 'litlleant_tracking_number'
         },
         {

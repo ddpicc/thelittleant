@@ -75,18 +75,12 @@
 										>
 											<v-card-text>
 												<v-form ref="verifyCodeForm" lazy-validation>
-														请填写注册时预留的手机号码
-														<v-col cols="12" class="phone-row">
-															<v-select v-model="phoneCode"
-																:items="phoneCodeList"
-																label="Code"
-																dense outlined
-																class="phone-row-code"
-															></v-select>                      
+														请填写注册时预留的邮箱
+														<v-col cols="12" class="phone-row">                
 															<v-text-field 
 																outlined dense
-																label="手机号码" 
-																v-model="phoneNumber"
+																label="邮箱" 
+																v-model="loginEmail"
 																:rules="[v => !!v   || 'phone number is required']"
 															></v-text-field>
 														</v-col>
@@ -197,9 +191,7 @@
 			notification: '',
 			snackbarTimeout: 3000,
 			e1: 1,
-			phoneCode: 'China +86',
-			phoneCodeList: ['China +86', 'USA +1'],
-			phoneNumber: '',
+			loginEmail: '',
 			verificationCode: '',
 			password: '',
 			repeatPassword: '',
@@ -250,22 +242,21 @@
 			
 			sendCode: function(){
 				if(this.phoneNumber == ''){
-					alert('请输入注册时预留的电话号码');
+					alert('请输入注册时预留的邮箱');
 					return;
 				}
-				let phone = this.phoneCode.split(' ')[1] + this.phoneNumber;
-        this.$http.get('/api/existUserPhone',{
+        this.$http.get('/api/existUserEmail',{
           params: {
-            phone: phone,
+            email: this.phoneNumber,
           }
         }).then( (res) => {
           if(res.data.length != 0){
 						this.storage_number = res.data[0].storage_number;
-            this.$http.get('/api/sendPhoneCode',{
-              params: {
-                phoneNm : phone,
-              }
-            }).then((res) => {
+            this.$http.get('/api/sendMailCode',{
+            	params: {
+              	email: this.loginEmail,
+            	}
+          	}).then((res) => {
               if(res.data.code == 1){
                 this.snackbar = true;
                 this.notification = res.data.msg;
@@ -273,7 +264,7 @@
               }
             });
           }else{
-            alert('这个电话号码还没有注册');
+            alert('这个邮箱还没有注册');
           }
         })
       },
@@ -284,10 +275,9 @@
           alert('请输入验证码')
         }
         if(this.$refs.verifyCodeForm.validate()){
-          let phone = this.phoneCode.split(' ')[1] + this.phoneNumber;
-          this.$http.post('/api/verifyPhoneCode',{
+          this.$http.post('/api/verifyMailCode',{
             code: this.verificationCode,
-            phoneNm: phone,
+            email : this.loginEmail,
           }).then(async (res) => {
             if(res.data.code == 0){
               alert('验证码错误，请重试');

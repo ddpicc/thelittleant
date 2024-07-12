@@ -69,6 +69,9 @@
                 <v-list-item @click="jumpToRateTable">
                   <v-list-item-title>计费标准</v-list-item-title>
                 </v-list-item>
+                <v-list-item @click="jumpToWarehouseList">
+                  <v-list-item-title>仓库地址列表</v-list-item-title>
+                </v-list-item>
               </v-list>
             </v-menu>
             <v-menu
@@ -237,6 +240,10 @@
 
       jumpToIncomeDetail: function(){
         this.$router.push({ path: '/admin/income_detail' });
+      },
+
+      jumpToWarehouseList: function(){
+        this.$router.push({ path: '/admin/warehouse_list' });
       },
 
       openPreprocess: function(){

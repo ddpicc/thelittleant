@@ -464,7 +464,7 @@
         this.$http.post('/api/package/insertUserPackage',{
             user_id: this.$store.state.user.user_id,
             litlleant_tracking_number: litlleant_tracking_number,
-            created_at: getNowFormatDate(),
+            created_at: new Date().getTime(),
             package_description: this.package_description,
             package_comment: this.package_comment,
             total: this.forcast_total,

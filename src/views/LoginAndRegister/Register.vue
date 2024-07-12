@@ -94,32 +94,25 @@
                   <v-col cols="12" sm="6" md="6">
                     <v-form ref="verifyCodeForm" lazy-validation>
                       <v-col cols="12">
-                        <v-text-field outlined dense label="姓名*" v-model="usertName" :rules="[v => !!v || 'username is required']"></v-text-field>
-                      </v-col>
-                      <v-col cols="12" class="phone-row">
-                        <v-select v-model="phoneCode"
-                          :items="phoneCodeList"
-                          label="Code"
-                          dense outlined
-                          class="phone-row-code"
-                        ></v-select>                      
-                        <v-text-field 
-                          outlined dense
-                          label="手机号码*" 
-                          v-model="phoneNumber"
-                          :rules="[v => !!v   || 'phone number is required']"
-                        ></v-text-field>
+                        <v-text-field outlined dense label="用户*" v-model="usertName" :rules="[v => !!v || 'username is required']"></v-text-field>
                       </v-col>
                       <v-col cols="12">
                         <div class="captcha-row">
-                         <v-text-field outlined dense v-model="verificationCode" class="captcha-input" label="验证码"/>
-                         <div v-if="showtime===null" class="captcha-button" @click="openVerifyDialog" style="cursor: pointer;">
-                          获取验证码
-                         </div>
-                           <div v-else class="captcha-button">
-                             {{showtime}}
-                           </div>
-                          </div>
+                          <v-text-field outlined dense v-model="verificationCode" class="captcha-input" label="验证码"/>
+                          <div v-if="showtime===null" class="captcha-button" @click="openVerifyDialog" style="cursor: pointer;">
+                            获取验证码
+                          </div>
+                          <div v-else class="captcha-button">
+                            {{showtime}}
+                          </div>
+                        </div>
+                      </v-col>
+                      <v-col cols="12" class="phone-row">                     
+                        <v-text-field 
+                          outlined dense
+                          label="邀请码" 
+                          v-model="inviteNm"
+                        ></v-text-field>
                       </v-col>
                     </v-form>
                   </v-col>
@@ -205,9 +198,7 @@
         password: '',
         repeatPassword: '',
         usertName: '',
-        phoneCode: 'China +86',
-        phoneCodeList: ['China +86', 'USA +1'],
-        phoneNumber: '',
+        inviteNm: '',
         verificationCode: '',
         snackbar: false,
         snackbarColor: '',
@@ -224,31 +215,17 @@
         timeCounter: null,  // null 则显示按钮 秒数则显示读秒
         showtime: null,
         verifyDialog: false,
-        verifyMethod: '手机验证',
-        methods: ['邮箱验证','手机验证']
+        verifyMethod: '邮箱验证',
+        methods: ['邮箱验证']
       }
     },
 
     methods: {
       sendCode: function(){
-        let phone = this.phoneCode.split(' ')[1] + this.phoneNumber;
         if(this.verifyMethod == '邮箱验证'){
           this.$http.get('/api/sendMailCode',{
             params: {
-              phoneNm : phone,
               email: this.loginEmail,
-            }
-          }).then((res) => {
-            if(res.data.code == 1){
-              this.snackbar = true;
-              this.notification = res.data.msg;
-              this.snackbarColor = 'green';
-            }
-          });
-        }else{
-          this.$http.get('/api/sendPhoneCode',{
-            params: {
-              phoneNm : phone,
             }
           }).then((res) => {
             if(res.data.code == 1){
@@ -269,6 +246,7 @@
             }
           }).then( (res) => {
             if(res.data.length === 0){
+              console.log('11111')
               resolve(storage_nm);
             }else{
               this.getUseableStorageNm();
@@ -286,17 +264,15 @@
           alert('请输入验证码')
         }
         if(this.$refs.registerForm.validate()){
-          let phone = this.phoneCode.split(' ')[1] + this.phoneNumber;
-          this.$http.get('/api/existUserEmailOrPhone',{
+          this.$http.get('/api/existUserEmail',{
             params: {
               email : this.loginEmail,
-              phone: phone,
             }
           }).then( (res) => {
             if(res.data.length === 0){
-              this.$http.post('/api/verifyPhoneCode',{
+              this.$http.post('/api/verifyMailCode',{
                 code: this.verificationCode,
-                phoneNm: phone,
+                email : this.loginEmail,
               }).then(async (res) => {
                 if(res.data.code == 0){
                   alert('验证码错误，请重试');
@@ -311,17 +287,18 @@
                     token : generateUniqueString(),
                     role : 'default',
                     name : this.usertName,
-                    phoneNm : phone,
+                    phoneNm : '',
+                    inviteNumber: this.inviteNm
                   }).then( (res) => {
                     this.snackbar = true;
                     this.notification = '注册成功';
                     this.snackbarColor = 'green';
-                    setTimeout( () => {this.$router.push({ path: '/register/selectplan', params: {storage_number: storage_number} });},2000);
+                    setTimeout( () => {this.$router.push({ path: '/dashboard'});},2000);
                   })
                 }
               })
             }else{
-              alert('这个手机号码已经存在');
+              alert('这个邮箱已经存在');
             }
           })
         }
@@ -358,15 +335,13 @@
       openVerifyDialog: function(){
         if(this.$refs.registerForm.validate()){
           if(this.$refs.verifyCodeForm.validate()){
-            let phone = this.phoneCode.split(' ')[1] + this.phoneNumber;
-            this.$http.get('/api/existUserEmailOrPhone',{
+            this.$http.get('/api/existUserEmail',{
               params: {
                 email : this.loginEmail,
-                phone: phone,
               }
             }).then( (res) => {
               if(res.data.length != 0){
-                alert('这个手机号码或邮箱已经存在');
+                alert('这个邮箱已经存在');
               }else{
                 this.verifyDialog = true;
               }

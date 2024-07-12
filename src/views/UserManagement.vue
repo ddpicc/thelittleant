@@ -176,7 +176,6 @@
 </template>
 
 <script>
-	import { getNowFormatDate } from '../utils/helpFunction';
   export default {
     data: () => ({
       searchStr: '',
@@ -198,18 +197,14 @@
         },
         {
           sortable: false,
-          text: '电话',
-          value: 'user_phone',
-        },
-        {
-          sortable: false,
           text: '账户类型',
           value: 'role',
         },
+
         {
           sortable: true,
-          text: 'Rate',
-          value: 'alias',
+          text: '邀请码',
+          value: 'invite_number',
         },
         {
           sortable: true,
@@ -307,7 +302,7 @@
               storage_number : this.selectedUserNm,
               type: '充值',
               comment: '手动调整',
-              created_at: getNowFormatDate(),
+              created_at: new Date().getTime(),
             }).then( (res) => {
               this.chargeDialog = false;
               this.getAll();
@@ -323,7 +318,7 @@
               storage_number : this.selectedUserNm,
               type: '运费',
               comment: '手动调整',
-              created_at: getNowFormatDate(),
+              created_at: new Date().getTime(),
             }).then( (res) => {
               this.chargeDialog = false;
               this.getAll();
@@ -340,7 +335,7 @@
         this.$http.post('/api/updateUserRole',{
           role : this.userRole,
           storage_number : this.selectedUserNm,
-          startDate: getNowFormatDate(),
+          startDate: new Date().getTime(),
         }).then((res) => {
           this.changeDialog = false;
           this.getAll();

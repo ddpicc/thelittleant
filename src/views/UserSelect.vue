@@ -226,7 +226,6 @@
 </template>
 
 <script>
-	import { getNowFormatDate } from '../utils/helpFunction';
   export default {
     data: () => ({
 			snackbar: false,
@@ -261,7 +260,7 @@
         this.$http.post('/api/updateUserRole',{
           role : _role,
           storage_number : this.$store.state.user.storage_number,
-          startDate: getNowFormatDate(),
+          startDate: new Date().getTime(),
         }).then((res) => {
           this.snackbar = true;
 					this.notification = '账户配置成功，返回主界面';

@@ -12,7 +12,7 @@
         color="red"
         size="17"
       >mdi-heart</v-icon>
-      The Little Ant
+      抱抱转运
     </span>
   </v-footer>
 </template>
