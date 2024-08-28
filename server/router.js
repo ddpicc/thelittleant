@@ -17,6 +17,9 @@ router.get('/existTheInvoice', (req, res, next) => {
   api.existTheInvoice(req, res, next);
 });
 
+router.post('/updateInstoreChargeStatus', (req, res, next) => {
+  api.updateInstoreChargeStatus(req, res, next);
+});
 
 router.get('/getTokenFromLogin', (req, res, next) => {
   userapi.getTokenFromLogin(req, res, next);

@@ -29,6 +29,9 @@
           <template v-slot:item.storage_number="{ item }">
             <v-chip outlined color='green' @click="filterUser(item.storage_number)">{{ item.storage_number }}</v-chip>
           </template>
+          <template v-slot:item.tracking="{ item }">
+            <v-chip outlined :color="getColor(item)">{{ item.tracking }}</v-chip>
+          </template>
           <template v-slot:item.action="{ item }">
             <v-icon
               small
@@ -349,6 +352,29 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <v-snackbar
+      v-model="snackbar"
+      :color="snackbarColor"
+      :timeout="3000"
+      top
+      dark
+    >
+      <v-icon
+        color="white"
+        class="mr-3"
+      >
+        mdi-bell-plus
+      </v-icon>
+      {{notification}}
+      <v-btn
+        icon
+        @click="snackbar = false"
+      >
+        <v-icon>
+          mdi-close-circle
+        </v-icon>
+      </v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -356,6 +382,9 @@
 import { getNowTimeFormatDate } from '../../utils/helpFunction';
   export default {
     data: () => ({
+      snackbar: false,
+      snackbarColor: '',
+      notification: '',
       searchStr: '',
       headers: [
         {
@@ -490,6 +519,10 @@ import { getNowTimeFormatDate } from '../../utils/helpFunction';
         this.$router.push({ name: '添加包裹', params: {selectedPackage: packageItem}});
       },
 
+      getColor: function(item){
+        if (item.instore_charge) return 'green'
+      },
+
       closeChangeDialog: function(){
         this.changeStorageNmDialog = false
         this.newStorageNm = ''
@@ -527,7 +560,14 @@ import { getNowTimeFormatDate } from '../../utils/helpFunction';
               type: '运费',
               created_at: new Date().getTime(),
             }).then( (res) => {
-              resolve(20);
+              this.$http.post('/api/updateInstoreChargeStatus',{
+                id : item.id,
+              }).then( (res) => {
+                resolve(20);
+                this.snackbar = true;
+                this.notification = '操作成功';
+                this.snackbarColor = 'green';
+              })
             })
           })
         }
@@ -652,13 +692,13 @@ import { getNowTimeFormatDate } from '../../utils/helpFunction';
 							itemTemplate_Id: res.data.insertId,
 						}).then( (res) => {
 							this.getItemsInPackage(this.selectedPackage.id);
-							//clear 
+							//clear
 							this.itemType = '';
 							this.itemName = '';
 							this.itemPrice = '';
 							this.itemCount = '';
 							this.itemBrand = '';
-							this.scaned_itemUPC = '';						
+							this.scaned_itemUPC = '';
 						})
 					})
 				}

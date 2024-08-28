@@ -25,6 +25,7 @@ var sqlMap = {
     insertUserInvoice: 'INSERT INTO littleAnt_user_invoice(invoice_type,total,prev_balance,user_sotrageNm,tracking_number,memo,created_at) VALUES(?,?,?,?,?,?,?)',
     insertxPayInvoice: 'INSERT INTO littleAnt_user_invoice(invoice_type,total,prev_balance,user_sotrageNm,tracking_number,memo,xpay_orderid,created_at) VALUES(?,?,?,?,?,?,?,?)',
     existTheInvoice: 'select 1 from littleAnt_user_invoice where xpay_orderid = ? limit 1',
+    updateInstoreChargeStatus: 'UPDATE littleAnt_third_party_package SET instore_charge = 1 WHERE id=?',
     
     registerUser: 'INSERT INTO littleAnt_user(storage_number,email,password,token,role,name,user_phone,invite_number) VALUES(?,?,?,?,?,?,?,?)',
     updatePassword: 'UPDATE littleAnt_user SET password = ? WHERE storage_number  = ?',

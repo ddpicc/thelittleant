@@ -162,6 +162,20 @@ module.exports = {
     })
   },
 
+  updateInstoreChargeStatus(req, res, next) {
+    console.log('api - updateInstoreChargeStatus');
+    var id = req.body.id;
+    pool.getConnection((err, connection) => {
+      var sql = sqlMap.updateInstoreChargeStatus;
+      connection.query(sql, [id], (err, result) => {
+        if(err)
+          console.log(err);
+        res.json(result);
+          connection.release();
+      })
+    })
+  },
+
   getBatchUser(req, res, next) {
     console.log('api - getBatchUser');
     var role = req.query.role;
